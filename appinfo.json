@@ -1,0 +1,37 @@
+{
+  "uuid": "c54d0be0-5923-4027-b6ed-5e4d8d7202b5",
+  "shortName": "Tideline",
+  "longName": "Tideline",
+  "capabilities": [ "configurable", "location" ],
+  "companyName": "WillemOlding",
+  "versionLabel": "1.1",
+  "sdkVersion": "3",
+  "targetPlatforms": [ "basalt", "chalk"],
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "NAME": 0,
+    "UNIT": 1,
+    "N_EVENTS": 2,
+    "TIMES": 3,
+    "HEIGHTS" : 4,
+    "EVENTS" : 5,
+    "ERROR_MSG" : 6
+  },
+  "resources": {
+    "media": [
+    {
+      "menuIcon": true,
+      "type": "png",
+      "name": "IMAGE_MENU_ICON",
+      "file": "images/menu_icon.png"
+    },
+    {
+      "type": "png",
+      "name": "WARNING",
+      "file": "images/warning.png"
+    }
+    ]
+  }
+}
