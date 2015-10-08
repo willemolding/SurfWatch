@@ -1,7 +1,6 @@
 #include <pebble.h>
 #include "tide_data.h"
 #include "app_animations.h"
-#include "tide_detail_menu.h"
 
 // the text layers to display the info
 static Window *window;
@@ -9,11 +8,10 @@ static Window *window;
 // layers for the load screen animation
 Layer *blue_layer;
 Layer *tick_layer;
+Layer *hands_layer;
 
 // text layers to display the data
 TextLayer *tide_event_text_layer;
-TextLayer *at_text_layer;
-
 
 TideData tide_data;
 int current_height;
@@ -31,15 +29,6 @@ int has_data = 0;
 
 static void update_display_data() {
     time_t t = time(NULL);
-
-    if(clock_is_24h_style()) {
-      strftime(timestring + 3, 20, "%H:%M\n%B %d", localtime(&t));
-    }
-    else {
-      strftime(timestring + 3, 20, "%I:%M %p\n%B %d", localtime(&t));
-    }
-
-    text_layer_set_text(at_text_layer, timestring);
 
     current_height = get_tide_at_time(&tide_data, t);
     int d1 = abs(current_height/100);
@@ -153,7 +142,7 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
 
 static void blue_layer_update_callback(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_fill_color(ctx, COLOR_FALLBACK(GColorBlueMoon,GColorClear));
+  graphics_context_set_fill_color(ctx, COLOR_FALLBACK(GColorPictonBlue,GColorClear));
   graphics_fill_rect(ctx, bounds, 0, GCornerNone);
 }
 
@@ -162,16 +151,45 @@ static void tick_layer_update_callback(Layer *layer, GContext *ctx){
   GRect bounds = layer_get_bounds(layer);
   graphics_context_set_fill_color(ctx, GColorBlack);
   for(int i = 0; i < 12; i++){
-      graphics_fill_radial(ctx, bounds, GOvalScaleModeFitCircle, 0,
+      graphics_fill_radial(ctx, grect_inset(bounds, GEdgeInsets(-3)), GOvalScaleModeFitCircle, 10,
         DEG_TO_TRIGANGLE(i*(360/12) - 1), DEG_TO_TRIGANGLE(i*(360/12) + 1));
   }
+}
+
+static void hands_layer_update_callback(Layer *layer, GContext *ctx){
+  GRect bounds = layer_get_bounds(layer);
+  GPoint center = GPoint(180/2,180/2);
+
+  // graphics_fill_radial(ctx, grect_inset(bounds, GEdgeInsets(80)), GOvalScaleModeFitCircle, 20,
+  //       DEG_TO_TRIGANGLE(0), DEG_TO_TRIGANGLE(360));
+
+  time_t timestamp = time(NULL);
+  struct tm *t = localtime(&timestamp);
+
+  int32_t hour_angle = TRIG_MAX_ANGLE * t->tm_hour / 12;
+  int32_t minute_angle = TRIG_MAX_ANGLE * t->tm_min / 60;
+
+  GPoint hour_point = gpoint_from_polar(grect_inset(bounds, GEdgeInsets(30)), 
+    GOvalScaleModeFitCircle,
+    DEG_TO_TRIGANGLE(hour_angle));
+
+  GPoint minute_point = gpoint_from_polar(grect_inset(bounds, GEdgeInsets(20)), 
+    GOvalScaleModeFitCircle,
+    DEG_TO_TRIGANGLE(minute_angle));
+
+  graphics_context_set_stroke_width(ctx,5);
+  graphics_draw_line(ctx,center, hour_point);
+  graphics_context_set_stroke_width(ctx,3);
+  graphics_draw_line(ctx,center, minute_point);
+
+
 }
 
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
 
-  window_set_background_color(window, COLOR_FALLBACK(GColorPictonBlue, GColorWhite));
+  //window_set_background_color(window, COLOR_FALLBACK(GColorPictonBlue, GColorWhite));
   GRect bounds = layer_get_bounds(window_layer);
 
   //add the blue layer at the base
@@ -184,25 +202,21 @@ static void window_load(Window *window) {
   layer_set_update_proc(tick_layer, tick_layer_update_callback);
   layer_add_child(window_layer, tick_layer);
 
+  //hands_layer
+  hands_layer = layer_create(bounds);
+  layer_set_update_proc(hands_layer, hands_layer_update_callback);
+  layer_add_child(window_layer, hands_layer);
+
 
   //create the event text layer
+  GRect tide_event_text_layer_bounds = grect_inset(bounds, GEdgeInsets(50, 0));
   tide_event_text_layer = text_layer_create(tide_event_text_layer_bounds);
   text_layer_set_text(tide_event_text_layer, "Loading");
-  #ifdef PBL_PLATFORM_APLITE
-  text_layer_set_font(tide_event_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-  #else
-  text_layer_set_font(tide_event_text_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
-  #endif
+  text_layer_set_font(tide_event_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
   text_layer_set_background_color(tide_event_text_layer, GColorClear);
   text_layer_set_text_alignment(tide_event_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(tide_event_text_layer));
 
-  //create the at text layer
-  at_text_layer = text_layer_create(at_text_layer_bounds);
-  text_layer_set_font(at_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_background_color(at_text_layer, GColorClear);
-  text_layer_set_text_alignment(at_text_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(at_text_layer));
 
   //start the loading animation
   animation_schedule(create_anim_load());
@@ -213,7 +227,6 @@ static void destroy_layers(){
   layer_destroy(blue_layer);
   layer_destroy(tick_layer);
   text_layer_destroy(tide_event_text_layer);
-  text_layer_destroy(at_text_layer);
 }
 
 static void init(void) {

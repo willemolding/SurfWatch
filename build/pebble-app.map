@@ -21,13 +21,10 @@ Common symbol       size              file
 tide_event_text_layer
                     0x4               src/pebtides_time.c.12.o
 tick_layer          0x4               src/pebtides_time.c.12.o
-menu_layer          0x4               src/pebtides_time.c.12.o
 current_height      0x4               src/pebtides_time.c.12.o
-name_text_layer     0x4               src/pebtides_time.c.12.o
 tide_data           0xec              src/pebtides_time.c.12.o
-at_text_layer       0x4               src/pebtides_time.c.12.o
+hands_layer         0x4               src/pebtides_time.c.12.o
 blue_layer          0x4               src/pebtides_time.c.12.o
-detail_window       0x4               src/pebtides_time.c.12.o
 
 Discarded input sections
 
@@ -49,24 +46,6 @@ Discarded input sections
  .bss           0x0000000000000000        0x0 src/pebtides_time.c.12.o
  .text          0x0000000000000000        0x0 src/tide_data.c.12.o
  .bss           0x0000000000000000        0x0 src/tide_data.c.12.o
- .text          0x0000000000000000        0x0 src/tide_detail_menu.c.12.o
- .bss           0x0000000000000000        0x0 src/tide_detail_menu.c.12.o
- .text.menu_get_num_sections_callback
-                0x0000000000000000        0x4 src/tide_detail_menu.c.12.o
- .text.menu_get_num_rows_callback
-                0x0000000000000000       0x18 src/tide_detail_menu.c.12.o
- .text.menu_get_header_height_callback
-                0x0000000000000000        0x4 src/tide_detail_menu.c.12.o
- .text.menu_select_callback
-                0x0000000000000000        0x2 src/tide_detail_menu.c.12.o
- .text.menu_draw_row_callback
-                0x0000000000000000       0xb8 src/tide_detail_menu.c.12.o
- .text.menu_draw_header_callback
-                0x0000000000000000        0xc src/tide_detail_menu.c.12.o
- .text.setup_detail_window
-                0x0000000000000000       0xc8 src/tide_detail_menu.c.12.o
- .rodata.str1.1
-                0x0000000000000000       0x3b src/tide_detail_menu.c.12.o
  .text          0x0000000000000000        0x0 basalt/appinfo.auto.c.12.o
  .bss           0x0000000000000000        0x0 basalt/appinfo.auto.c.12.o
  .bss           0x0000000000000000        0x0 /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
@@ -174,6 +153,8 @@ Discarded input sections
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.clock_copy_time_string
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+ .text.clock_is_24h_style
+                0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.data_logging_create
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.data_logging_finish
@@ -257,8 +238,6 @@ Discarded input sections
  .text.graphics_draw_bitmap_in_rect
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.graphics_draw_circle
-                0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
- .text.graphics_draw_line
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.graphics_draw_pixel
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
@@ -471,6 +450,8 @@ Discarded input sections
  .text.srand    0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.strcat   0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.strcmp   0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+ .text.strftime
+                0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.strlen   0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.strncat  0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.strncmp  0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
@@ -802,8 +783,6 @@ Discarded input sections
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.graphics_context_set_antialiased
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
- .text.graphics_context_set_stroke_width
-                0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.action_bar_layer_add_to_window
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.action_bar_layer_clear_icon
@@ -1055,10 +1034,6 @@ Discarded input sections
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.menu_layer_set_center_focused
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
- .text.grect_inset
-                0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
- .text.gpoint_from_polar
-                0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.graphics_draw_arc
                 0x0000000000000000        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text.grect_centered_from_polar
@@ -1093,7 +1068,6 @@ LOAD /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.
 LOAD src/app_animations.c.12.o
 LOAD src/pebtides_time.c.12.o
 LOAD src/tide_data.c.12.o
-LOAD src/tide_detail_menu.c.12.o
 LOAD basalt/appinfo.auto.c.12.o
 LOAD /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a
 START GROUP
@@ -1116,7 +1090,7 @@ LOAD /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.
  .note.gnu.build-id
                 0x0000000000000084       0x24 linker stubs
 
-.text           0x00000000000000a8     0x1b89
+.text           0x00000000000000a8     0x1b8d
  *(.text)
  .text          0x00000000000000a8       0x14 /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .text          0x00000000000000bc      0x370 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
@@ -1177,65 +1151,64 @@ LOAD /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.
  .text.push_error
                 0x0000000000000ee0       0xf8 src/pebtides_time.c.12.o
  .text.inbox_received_callback
-                0x0000000000000fd8      0x218 src/pebtides_time.c.12.o
+                0x0000000000000fd8      0x1ac src/pebtides_time.c.12.o
  .text.window_load
-                0x00000000000011f0      0x1cc src/pebtides_time.c.12.o
+                0x0000000000001184      0x13c src/pebtides_time.c.12.o
+ .text.hands_layer_update_callback
+                0x00000000000012c0      0x108 src/pebtides_time.c.12.o
  .text.tick_layer_update_callback
-                0x00000000000013bc       0x64 src/pebtides_time.c.12.o
+                0x00000000000013c8       0x84 src/pebtides_time.c.12.o
  .text.blue_layer_update_callback
-                0x0000000000001420       0x2e src/pebtides_time.c.12.o
- *fill*         0x000000000000144e        0x2 
+                0x000000000000144c       0x2e src/pebtides_time.c.12.o
+ *fill*         0x000000000000147a        0x2 
  .text.error_layer_config_provider
-                0x0000000000001450       0x10 src/pebtides_time.c.12.o
-                0x0000000000001450                error_layer_config_provider
+                0x000000000000147c       0x10 src/pebtides_time.c.12.o
+                0x000000000000147c                error_layer_config_provider
  .text.error_back_click_handler
-                0x0000000000001460        0x6 src/pebtides_time.c.12.o
-                0x0000000000001460                error_back_click_handler
- *fill*         0x0000000000001466        0x2 
+                0x000000000000148c        0x6 src/pebtides_time.c.12.o
+                0x000000000000148c                error_back_click_handler
+ *fill*         0x0000000000001492        0x2 
  .text.startup.main
-                0x0000000000001468      0x130 src/pebtides_time.c.12.o
-                0x0000000000001468                main
+                0x0000000000001494      0x110 src/pebtides_time.c.12.o
+                0x0000000000001494                main
  .text.store_tide_data
-                0x0000000000001598       0x60 src/tide_data.c.12.o
-                0x0000000000001598                store_tide_data
+                0x00000000000015a4       0x60 src/tide_data.c.12.o
+                0x00000000000015a4                store_tide_data
  .text.load_tide_data
-                0x00000000000015f8       0x74 src/tide_data.c.12.o
-                0x00000000000015f8                load_tide_data
+                0x0000000000001604       0x74 src/tide_data.c.12.o
+                0x0000000000001604                load_tide_data
  .text.find_min
-                0x000000000000166c       0x1c src/tide_data.c.12.o
-                0x000000000000166c                find_min
+                0x0000000000001678       0x1c src/tide_data.c.12.o
+                0x0000000000001678                find_min
  .text.find_max
-                0x0000000000001688       0x1c src/tide_data.c.12.o
-                0x0000000000001688                find_max
+                0x0000000000001694       0x1c src/tide_data.c.12.o
+                0x0000000000001694                find_max
  .text.get_tide_at_time
-                0x00000000000016a4      0x150 src/tide_data.c.12.o
-                0x00000000000016a4                get_tide_at_time
+                0x00000000000016b0      0x150 src/tide_data.c.12.o
+                0x00000000000016b0                get_tide_at_time
  .text.app_event_loop
-                0x00000000000017f4        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000017f4                app_event_loop
- .text.app_log  0x0000000000001800        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001800                app_log
+                0x0000000000001800        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001800                app_event_loop
+ .text.app_log  0x000000000000180c        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x000000000000180c                app_log
  .text.app_message_open
-                0x000000000000180c        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x000000000000180c                app_message_open
- .text.bitmap_layer_create
                 0x0000000000001818        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001818                bitmap_layer_create
- .text.bitmap_layer_get_layer
+                0x0000000000001818                app_message_open
+ .text.bitmap_layer_create
                 0x0000000000001824        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001824                bitmap_layer_get_layer
- .text.bitmap_layer_set_bitmap
+                0x0000000000001824                bitmap_layer_create
+ .text.bitmap_layer_get_layer
                 0x0000000000001830        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001830                bitmap_layer_set_bitmap
- .text.bitmap_layer_set_compositing_mode
+                0x0000000000001830                bitmap_layer_get_layer
+ .text.bitmap_layer_set_bitmap
                 0x000000000000183c        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x000000000000183c                bitmap_layer_set_compositing_mode
- .text.bluetooth_connection_service_peek
+                0x000000000000183c                bitmap_layer_set_bitmap
+ .text.bitmap_layer_set_compositing_mode
                 0x0000000000001848        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001848                bluetooth_connection_service_peek
- .text.clock_is_24h_style
+                0x0000000000001848                bitmap_layer_set_compositing_mode
+ .text.bluetooth_connection_service_peek
                 0x0000000000001854        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001854                clock_is_24h_style
+                0x0000000000001854                bluetooth_connection_service_peek
  .text.cos_lookup
                 0x0000000000001860        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
                 0x0000000000001860                cos_lookup
@@ -1251,51 +1224,51 @@ LOAD /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.
  .text.gbitmap_create_with_resource
                 0x0000000000001890        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
                 0x0000000000001890                gbitmap_create_with_resource
- .text.graphics_fill_rect
+ .text.graphics_draw_line
                 0x000000000000189c        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x000000000000189c                graphics_fill_rect
- .text.layer_add_child
+                0x000000000000189c                graphics_draw_line
+ .text.graphics_fill_rect
                 0x00000000000018a8        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000018a8                layer_add_child
- .text.layer_create
+                0x00000000000018a8                graphics_fill_rect
+ .text.layer_add_child
                 0x00000000000018b4        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000018b4                layer_create
- .text.layer_destroy
+                0x00000000000018b4                layer_add_child
+ .text.layer_create
                 0x00000000000018c0        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000018c0                layer_destroy
- .text.layer_get_bounds
+                0x00000000000018c0                layer_create
+ .text.layer_destroy
                 0x00000000000018cc        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000018cc                layer_get_bounds
- .text.layer_get_frame
+                0x00000000000018cc                layer_destroy
+ .text.layer_get_bounds
                 0x00000000000018d8        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000018d8                layer_get_frame
- .text.layer_set_update_proc
+                0x00000000000018d8                layer_get_bounds
+ .text.layer_get_frame
                 0x00000000000018e4        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000018e4                layer_set_update_proc
- .text.memcpy   0x00000000000018f0        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000018f0                memcpy
- .text.memset   0x00000000000018fc        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x00000000000018fc                memset
+                0x00000000000018e4                layer_get_frame
+ .text.layer_set_update_proc
+                0x00000000000018f0        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x00000000000018f0                layer_set_update_proc
+ .text.memcpy   0x00000000000018fc        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x00000000000018fc                memcpy
+ .text.memset   0x0000000000001908        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001908                memset
  .text.persist_exists
-                0x0000000000001908        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001908                persist_exists
- .text.persist_read_int
                 0x0000000000001914        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001914                persist_read_int
- .text.persist_write_int
+                0x0000000000001914                persist_exists
+ .text.persist_read_int
                 0x0000000000001920        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001920                persist_write_int
- .text.persist_write_string
+                0x0000000000001920                persist_read_int
+ .text.persist_write_int
                 0x000000000000192c        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x000000000000192c                persist_write_string
- .text.snprintf
+                0x000000000000192c                persist_write_int
+ .text.persist_write_string
                 0x0000000000001938        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001938                snprintf
- .text.strcpy   0x0000000000001944        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001944                strcpy
- .text.strftime
-                0x0000000000001950        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001950                strftime
+                0x0000000000001938                persist_write_string
+ .text.snprintf
+                0x0000000000001944        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001944                snprintf
+ .text.strcpy   0x0000000000001950        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001950                strcpy
  .text.window_create
                 0x000000000000195c        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
                 0x000000000000195c                window_create
@@ -1374,99 +1347,106 @@ LOAD /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.
  .text.animation_set_play_count
                 0x0000000000001a88        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
                 0x0000000000001a88                animation_set_play_count
- .text.text_layer_create
+ .text.graphics_context_set_stroke_width
                 0x0000000000001a94        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001a94                text_layer_create
- .text.text_layer_destroy
+                0x0000000000001a94                graphics_context_set_stroke_width
+ .text.text_layer_create
                 0x0000000000001aa0        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001aa0                text_layer_destroy
- .text.text_layer_get_layer
+                0x0000000000001aa0                text_layer_create
+ .text.text_layer_destroy
                 0x0000000000001aac        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001aac                text_layer_get_layer
- .text.text_layer_set_background_color
+                0x0000000000001aac                text_layer_destroy
+ .text.text_layer_get_layer
                 0x0000000000001ab8        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001ab8                text_layer_set_background_color
- .text.text_layer_set_font
+                0x0000000000001ab8                text_layer_get_layer
+ .text.text_layer_set_background_color
                 0x0000000000001ac4        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001ac4                text_layer_set_font
- .text.text_layer_set_text
+                0x0000000000001ac4                text_layer_set_background_color
+ .text.text_layer_set_font
                 0x0000000000001ad0        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001ad0                text_layer_set_text
- .text.text_layer_set_text_alignment
+                0x0000000000001ad0                text_layer_set_font
+ .text.text_layer_set_text
                 0x0000000000001adc        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001adc                text_layer_set_text_alignment
- .text.time     0x0000000000001ae8        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001ae8                time
+                0x0000000000001adc                text_layer_set_text
+ .text.text_layer_set_text_alignment
+                0x0000000000001ae8        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001ae8                text_layer_set_text_alignment
+ .text.time     0x0000000000001af4        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001af4                time
+ .text.grect_inset
+                0x0000000000001b00        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001b00                grect_inset
+ .text.gpoint_from_polar
+                0x0000000000001b0c        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001b0c                gpoint_from_polar
  .text.graphics_fill_radial
-                0x0000000000001af4        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
-                0x0000000000001af4                graphics_fill_radial
+                0x0000000000001b18        0xc /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x0000000000001b18                graphics_fill_radial
  *(.rodata)
- .rodata        0x0000000000001b00       0x10 src/pebtides_time.c.12.o
+ .rodata        0x0000000000001b24       0x24 src/pebtides_time.c.12.o
  *(.rodata*)
  .rodata.str1.1
-                0x0000000000001b10       0xe8 src/pebtides_time.c.12.o
-                                         0xf0 (size before relaxing)
+                0x0000000000001b48       0xb1 src/pebtides_time.c.12.o
+                                         0xb9 (size before relaxing)
  .rodata.str1.1
-                0x0000000000001bf8       0x39 src/tide_data.c.12.o
-                                         0x3c (size before relaxing)
+                0x0000000000001bf9       0x3c src/tide_data.c.12.o
 
-.glue_7         0x0000000000001c34        0x0
+.glue_7         0x0000000000001c38        0x0
  .glue_7        0x0000000000000000        0x0 linker stubs
 
-.glue_7t        0x0000000000001c34        0x0
+.glue_7t        0x0000000000001c38        0x0
  .glue_7t       0x0000000000000000        0x0 linker stubs
 
-.vfp11_veneer   0x0000000000001c34        0x0
+.vfp11_veneer   0x0000000000001c38        0x0
  .vfp11_veneer  0x0000000000000000        0x0 linker stubs
 
-.v4_bx          0x0000000000001c34        0x0
+.v4_bx          0x0000000000001c38        0x0
  .v4_bx         0x0000000000000000        0x0 linker stubs
 
-.iplt           0x0000000000001c34        0x0
+.iplt           0x0000000000001c38        0x0
  .iplt          0x0000000000000000        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
 
-.rel.dyn        0x0000000000001c34        0x0
+.rel.dyn        0x0000000000001c38        0x0
  .rel.iplt      0x0000000000000000        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
  .rel.got       0x0000000000000000        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
 
-.data           0x0000000000001c34        0xc
+.data           0x0000000000001c38        0xc
  *(.data)
- .data          0x0000000000001c34        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crti.o
- .data          0x0000000000001c34        0x4 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
-                0x0000000000001c34                __dso_handle
- .data          0x0000000000001c38        0x0 src/app_animations.c.12.o
- .data          0x0000000000001c38        0x0 src/pebtides_time.c.12.o
- .data          0x0000000000001c38        0x0 src/tide_data.c.12.o
- .data          0x0000000000001c38        0x0 src/tide_detail_menu.c.12.o
- .data          0x0000000000001c38        0x0 basalt/appinfo.auto.c.12.o
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
- .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtn.o
+ .data          0x0000000000001c38        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crti.o
+ .data          0x0000000000001c38        0x4 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
+                0x0000000000001c38                __dso_handle
+ .data          0x0000000000001c3c        0x0 src/app_animations.c.12.o
+ .data          0x0000000000001c3c        0x0 src/pebtides_time.c.12.o
+ .data          0x0000000000001c3c        0x0 src/tide_data.c.12.o
+ .data          0x0000000000001c3c        0x0 basalt/appinfo.auto.c.12.o
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
+ .data          0x0000000000001c3c        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtn.o
  *(.data.*)
  .data.level_height
-                0x0000000000001c38        0x4 src/pebtides_time.c.12.o
-                0x0000000000001c38                level_height
- .data.min_height
                 0x0000000000001c3c        0x4 src/pebtides_time.c.12.o
-                0x0000000000001c3c                min_height
+                0x0000000000001c3c                level_height
+ .data.min_height
+                0x0000000000001c40        0x4 src/pebtides_time.c.12.o
+                0x0000000000001c40                min_height
 
-.igot.plt       0x0000000000001c40        0x0
+.igot.plt       0x0000000000001c44        0x0
  .igot.plt      0x0000000000000000        0x0 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
 
-.got            0x0000000000001c40       0x28
- .got           0x0000000000001c40       0x28 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
+.got            0x0000000000001c44       0x24
+ .got           0x0000000000001c44       0x24 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
 
 .got.plt        0x0000000000001c68        0xc
  .got.plt       0x0000000000001c68        0xc /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
                 0x0000000000001c68                _GLOBAL_OFFSET_TABLE_
 
-.bss            0x0000000000001c74      0x16c
+.bss            0x0000000000001c74      0x160
  *(.bss)
  *(.bss.*)
  .bss.height_text
@@ -1483,16 +1463,13 @@ LOAD /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.
                 0x0000000000001c9c       0x32 src/pebtides_time.c.12.o
  *fill*         0x0000000000001cce        0x2 
  .bss.window    0x0000000000001cd0        0x4 src/pebtides_time.c.12.o
- COMMON         0x0000000000001cd4      0x10c src/pebtides_time.c.12.o
+ COMMON         0x0000000000001cd4      0x100 src/pebtides_time.c.12.o
                 0x0000000000001cd4                tide_event_text_layer
                 0x0000000000001cd8                tick_layer
-                0x0000000000001cdc                menu_layer
-                0x0000000000001ce0                current_height
-                0x0000000000001ce4                name_text_layer
-                0x0000000000001ce8                tide_data
-                0x0000000000001dd4                at_text_layer
-                0x0000000000001dd8                blue_layer
-                0x0000000000001ddc                detail_window
+                0x0000000000001cdc                current_height
+                0x0000000000001ce0                tide_data
+                0x0000000000001dcc                hands_layer
+                0x0000000000001dd0                blue_layer
 
 DISCARD
  libc.a(*)
@@ -1514,27 +1491,25 @@ OUTPUT(/Users/willemolding/Dropbox/Pebble/Pebtides_Time/Tideface/build/basalt/pe
  .ARM.attributes
                 0x00000000000000a8       0x33 src/tide_data.c.12.o
  .ARM.attributes
-                0x00000000000000db       0x33 src/tide_detail_menu.c.12.o
+                0x00000000000000db       0x33 basalt/appinfo.auto.c.12.o
  .ARM.attributes
-                0x000000000000010e       0x33 basalt/appinfo.auto.c.12.o
+                0x000000000000010e       0x21 /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
  .ARM.attributes
-                0x0000000000000141       0x21 /Users/willemolding/pebble-dev/PebbleSDK-3.6-dp2/Pebble/basalt/lib/libpebble.a(tmpts16sopebble.o)
+                0x000000000000012f       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
  .ARM.attributes
-                0x0000000000000162       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+                0x0000000000000148       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
  .ARM.attributes
-                0x000000000000017b       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+                0x0000000000000161       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
  .ARM.attributes
-                0x0000000000000194       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+                0x000000000000017a       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
  .ARM.attributes
-                0x00000000000001ad       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+                0x0000000000000193       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
  .ARM.attributes
-                0x00000000000001c6       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
+                0x00000000000001ac       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
  .ARM.attributes
-                0x00000000000001df       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+                0x00000000000001c5       0x29 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
  .ARM.attributes
-                0x00000000000001f8       0x29 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
- .ARM.attributes
-                0x0000000000000221       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtn.o
+                0x00000000000001ee       0x19 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtn.o
 
 .comment        0x0000000000000000       0x4e
  .comment       0x0000000000000000       0x4e /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
@@ -1542,99 +1517,88 @@ OUTPUT(/Users/willemolding/Dropbox/Pebble/Pebtides_Time/Tideface/build/basalt/pe
  .comment       0x0000000000000000       0x4f src/app_animations.c.12.o
  .comment       0x0000000000000000       0x4f src/pebtides_time.c.12.o
  .comment       0x0000000000000000       0x4f src/tide_data.c.12.o
- .comment       0x0000000000000000       0x4f src/tide_detail_menu.c.12.o
  .comment       0x0000000000000000       0x4f basalt/appinfo.auto.c.12.o
  .comment       0x0000000000000000       0x4f /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
 
-.debug_info     0x0000000000000000     0x3b10
+.debug_info     0x0000000000000000     0x2fd3
  .debug_info    0x0000000000000000      0x474 src/app_animations.c.12.o
- .debug_info    0x0000000000000474     0x1b32 src/pebtides_time.c.12.o
- .debug_info    0x0000000000001fa6      0x7d5 src/tide_data.c.12.o
- .debug_info    0x000000000000277b      0xc05 src/tide_detail_menu.c.12.o
- .debug_info    0x0000000000003380      0x33a basalt/appinfo.auto.c.12.o
- .debug_info    0x00000000000036ba       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
- .debug_info    0x0000000000003773       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
- .debug_info    0x000000000000382c       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
- .debug_info    0x00000000000038e5       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
- .debug_info    0x000000000000399e       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
- .debug_info    0x0000000000003a57       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+ .debug_info    0x0000000000000474     0x1bfa src/pebtides_time.c.12.o
+ .debug_info    0x000000000000206e      0x7d5 src/tide_data.c.12.o
+ .debug_info    0x0000000000002843      0x33a basalt/appinfo.auto.c.12.o
+ .debug_info    0x0000000000002b7d       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+ .debug_info    0x0000000000002c36       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+ .debug_info    0x0000000000002cef       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+ .debug_info    0x0000000000002da8       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+ .debug_info    0x0000000000002e61       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
+ .debug_info    0x0000000000002f1a       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
 
-.debug_abbrev   0x0000000000000000      0xacb
+.debug_abbrev   0x0000000000000000      0x82c
  .debug_abbrev  0x0000000000000000      0x12d src/app_animations.c.12.o
- .debug_abbrev  0x000000000000012d      0x3f4 src/pebtides_time.c.12.o
- .debug_abbrev  0x0000000000000521      0x1f7 src/tide_data.c.12.o
- .debug_abbrev  0x0000000000000718      0x29d src/tide_detail_menu.c.12.o
- .debug_abbrev  0x00000000000009b5       0x9e basalt/appinfo.auto.c.12.o
- .debug_abbrev  0x0000000000000a53       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
- .debug_abbrev  0x0000000000000a67       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
- .debug_abbrev  0x0000000000000a7b       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
- .debug_abbrev  0x0000000000000a8f       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
- .debug_abbrev  0x0000000000000aa3       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
- .debug_abbrev  0x0000000000000ab7       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+ .debug_abbrev  0x000000000000012d      0x3f2 src/pebtides_time.c.12.o
+ .debug_abbrev  0x000000000000051f      0x1f7 src/tide_data.c.12.o
+ .debug_abbrev  0x0000000000000716       0x9e basalt/appinfo.auto.c.12.o
+ .debug_abbrev  0x00000000000007b4       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+ .debug_abbrev  0x00000000000007c8       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+ .debug_abbrev  0x00000000000007dc       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+ .debug_abbrev  0x00000000000007f0       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+ .debug_abbrev  0x0000000000000804       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
+ .debug_abbrev  0x0000000000000818       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
 
-.debug_loc      0x0000000000000000      0xb03
+.debug_loc      0x0000000000000000      0x8f7
  .debug_loc     0x0000000000000000       0xd0 src/app_animations.c.12.o
- .debug_loc     0x00000000000000d0      0x4fc src/pebtides_time.c.12.o
- .debug_loc     0x00000000000005cc      0x296 src/tide_data.c.12.o
- .debug_loc     0x0000000000000862      0x2a1 src/tide_detail_menu.c.12.o
+ .debug_loc     0x00000000000000d0      0x591 src/pebtides_time.c.12.o
+ .debug_loc     0x0000000000000661      0x296 src/tide_data.c.12.o
 
-.debug_aranges  0x0000000000000000      0x1f0
+.debug_aranges  0x0000000000000000      0x1a8
  .debug_aranges
                 0x0000000000000000       0x28 src/app_animations.c.12.o
  .debug_aranges
-                0x0000000000000028       0x60 src/pebtides_time.c.12.o
+                0x0000000000000028       0x68 src/pebtides_time.c.12.o
  .debug_aranges
-                0x0000000000000088       0x40 src/tide_data.c.12.o
+                0x0000000000000090       0x40 src/tide_data.c.12.o
  .debug_aranges
-                0x00000000000000c8       0x50 src/tide_detail_menu.c.12.o
+                0x00000000000000d0       0x18 basalt/appinfo.auto.c.12.o
  .debug_aranges
-                0x0000000000000118       0x18 basalt/appinfo.auto.c.12.o
+                0x00000000000000e8       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
  .debug_aranges
-                0x0000000000000130       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+                0x0000000000000108       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
  .debug_aranges
-                0x0000000000000150       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+                0x0000000000000128       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
  .debug_aranges
-                0x0000000000000170       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+                0x0000000000000148       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
  .debug_aranges
-                0x0000000000000190       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+                0x0000000000000168       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
  .debug_aranges
-                0x00000000000001b0       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
- .debug_aranges
-                0x00000000000001d0       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+                0x0000000000000188       0x20 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
 
-.debug_ranges   0x0000000000000000      0x130
+.debug_ranges   0x0000000000000000      0x118
  .debug_ranges  0x0000000000000000       0x18 src/app_animations.c.12.o
- .debug_ranges  0x0000000000000018       0x90 src/pebtides_time.c.12.o
- .debug_ranges  0x00000000000000a8       0x48 src/tide_data.c.12.o
- .debug_ranges  0x00000000000000f0       0x40 src/tide_detail_menu.c.12.o
+ .debug_ranges  0x0000000000000018       0xb8 src/pebtides_time.c.12.o
+ .debug_ranges  0x00000000000000d0       0x48 src/tide_data.c.12.o
 
-.debug_line     0x0000000000000000     0x13f2
+.debug_line     0x0000000000000000     0x1142
  .debug_line    0x0000000000000000      0x169 src/app_animations.c.12.o
- .debug_line    0x0000000000000169      0x445 src/pebtides_time.c.12.o
- .debug_line    0x00000000000005ae      0x2a1 src/tide_data.c.12.o
- .debug_line    0x000000000000084f      0x2c1 src/tide_detail_menu.c.12.o
- .debug_line    0x0000000000000b10      0x135 basalt/appinfo.auto.c.12.o
- .debug_line    0x0000000000000c45      0x20a /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
- .debug_line    0x0000000000000e4f      0x226 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
- .debug_line    0x0000000000001075       0x86 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
- .debug_line    0x00000000000010fb      0x128 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
- .debug_line    0x0000000000001223      0x149 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
- .debug_line    0x000000000000136c       0x86 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+ .debug_line    0x0000000000000169      0x456 src/pebtides_time.c.12.o
+ .debug_line    0x00000000000005bf      0x2a1 src/tide_data.c.12.o
+ .debug_line    0x0000000000000860      0x135 basalt/appinfo.auto.c.12.o
+ .debug_line    0x0000000000000995      0x20a /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+ .debug_line    0x0000000000000b9f      0x226 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+ .debug_line    0x0000000000000dc5       0x86 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+ .debug_line    0x0000000000000e4b      0x128 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+ .debug_line    0x0000000000000f73      0x149 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
+ .debug_line    0x00000000000010bc       0x86 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
 
-.debug_str      0x0000000000000000     0x160f
+.debug_str      0x0000000000000000     0x1288
  .debug_str     0x0000000000000000      0x25b src/app_animations.c.12.o
                                         0x2b1 (size before relaxing)
- .debug_str     0x000000000000025b      0xcc3 src/pebtides_time.c.12.o
-                                        0xeef (size before relaxing)
- .debug_str     0x0000000000000f1e       0xb8 src/tide_data.c.12.o
+ .debug_str     0x000000000000025b      0xd61 src/pebtides_time.c.12.o
+                                        0xf89 (size before relaxing)
+ .debug_str     0x0000000000000fbc       0xb8 src/tide_data.c.12.o
                                         0x301 (size before relaxing)
- .debug_str     0x0000000000000fd6      0x42c src/tide_detail_menu.c.12.o
-                                        0x6c8 (size before relaxing)
- .debug_str     0x0000000000001402      0x20d basalt/appinfo.auto.c.12.o
+ .debug_str     0x0000000000001074      0x214 basalt/appinfo.auto.c.12.o
                                         0x378 (size before relaxing)
 
-.debug_frame    0x0000000000000000      0x2a4
+.debug_frame    0x0000000000000000      0x214
  .debug_frame   0x0000000000000000       0x4c src/app_animations.c.12.o
- .debug_frame   0x000000000000004c      0x114 src/pebtides_time.c.12.o
- .debug_frame   0x0000000000000160       0x98 src/tide_data.c.12.o
- .debug_frame   0x00000000000001f8       0xac src/tide_detail_menu.c.12.o
+ .debug_frame   0x000000000000004c      0x130 src/pebtides_time.c.12.o
+ .debug_frame   0x000000000000017c       0x98 src/tide_data.c.12.o
