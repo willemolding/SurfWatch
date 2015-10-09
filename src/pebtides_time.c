@@ -221,6 +221,15 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   gpath_rotate_to(s_minute_hand, TRIG_MAX_ANGLE * t->tm_min / 60);
   gpath_draw_outline(ctx, s_minute_hand);
   
+  const int hand_fill_width = 6;
+  graphics_context_set_stroke_width(ctx, hand_fill_width);
+  
+  GPoint minute_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, TRIG_MAX_ANGLE * t->tm_min / 60);
+  graphics_draw_line(ctx, center, minute_hand_fill);
+  
+  GPoint hour_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  graphics_draw_line(ctx, center, hour_hand_fill);
+  
 }
 
 static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
