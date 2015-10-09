@@ -1,20 +1,18 @@
 #include <pebble.h>
 #include "tide_data.h"
-#include "app_animations.h"
 
-#define N_WAVE_POINTS 6
+#define SCREEN_WIDTH 180
+#define SCREEN_HEIGHT 180
+#define LEFT_MARGIN 30
 
 // the text layers to display the info
 static Window *window;
 
 // layers for the load screen animation
-Layer *blue_layer;
-Layer *tick_layer;
-Layer *hands_layer;
+Layer *wave_layer;
 
 // text layers to display the data
 TextLayer *tide_event_text_layer;
-TextLayer *date_text_layer;
 
 TideData tide_data;
 int current_height;
@@ -29,7 +27,6 @@ int level_height = SCREEN_HEIGHT / 2; // how many pixels above the bottom to dra
 int min_height = 10000;
 int max_height = 0;
 int has_data = 0;
-static GPath *s_my_path_ptr = NULL;
 
 static void update_display_data() {
     time_t t = time(NULL);
@@ -135,9 +132,6 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     store_tide_data(&tide_data);
 
     update_display_data();
-    animation_unschedule_all();
-    animation_schedule(create_anim_water_level());
-
   }
   else { // push an error message window to the stack
       push_error(error_message);
@@ -148,55 +142,27 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
   APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
 }
 
-static void blue_layer_update_callback(Layer *layer, GContext *ctx) {
+static void wave_layer_update_callback(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_fill_color(ctx, GColorPictonBlue);
-  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
 
-  const int d = SCREEN_WIDTH/N_WAVE_POINTS;
+  // for every pixel in the layer draw a vertical line at the wave height
+  const int max_wave_height = 10;
+  const int offset = 10;
+  const float cycles = 1.5;
+  graphics_context_set_stroke_color(ctx,GColorPictonBlue);          
+  graphics_context_set_stroke_width(ctx,1);
+  for(int i = 0; i < bounds.size.w; i++){
+    int height = cos_lookup(i * TRIG_MAX_ANGLE * cycles / bounds.size.w) * max_wave_height / TRIG_MAX_RATIO;
+    graphics_draw_line(ctx,GPoint(i, bounds.size.h),
+                           GPoint(i, bounds.size.h / 2 - height - offset));      
+  } 
 
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  for(int i = 0; i <= N_WAVE_POINTS; i++){
-    graphics_fill_circle(ctx,GPoint(i*d, 0), d/2 + 3);
-  }
-}
-
-
-static void tick_layer_update_callback(Layer *layer, GContext *ctx){
-  GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  for(int i = 0; i < 12; i++){
-      graphics_fill_radial(ctx, grect_inset(bounds, GEdgeInsets(-3)), GOvalScaleModeFitCircle, 15,
-        DEG_TO_TRIGANGLE(i*(360/12) - 1), DEG_TO_TRIGANGLE(i*(360/12) + 1));
-  }
-}
-
-static void hands_layer_update_callback(Layer *layer, GContext *ctx){
-  GRect bounds = layer_get_bounds(layer);
-  GPoint center = GPoint(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
-
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_radial(ctx, grect_inset(bounds, GEdgeInsets(60)), GOvalScaleModeFitCircle, 60,
-        DEG_TO_TRIGANGLE(0), DEG_TO_TRIGANGLE(360));
-
-  time_t timestamp = time(NULL);
-  struct tm *t = localtime(&timestamp);
-
-  int32_t hour_angle = TRIG_MAX_ANGLE * (t->tm_hour % 12) / 12;
-  int32_t minute_angle = TRIG_MAX_ANGLE * t->tm_min / 60;
-
-  GPoint hour_point = gpoint_from_polar(grect_inset(bounds, GEdgeInsets(30)), 
-    GOvalScaleModeFitCircle,
-    DEG_TO_TRIGANGLE(hour_angle));
-
-  GPoint minute_point = gpoint_from_polar(grect_inset(bounds, GEdgeInsets(20)), 
-    GOvalScaleModeFitCircle,
-    DEG_TO_TRIGANGLE(minute_angle));
-
-  graphics_context_set_stroke_width(ctx,5);
-  graphics_draw_line(ctx,center, hour_point);
-  graphics_context_set_stroke_width(ctx,3);
-  graphics_draw_line(ctx,center, minute_point);
+  //draw the tick marker line
+  graphics_context_set_stroke_color(ctx,GColorBlack);  
+  graphics_context_set_stroke_width(ctx,1);    
+  graphics_draw_line(ctx,GPoint(bounds.size.w / 3, 4),
+                         GPoint(bounds.size.w / 3, bounds.size.h));
+  graphics_draw_circle(ctx,GPoint(bounds.size.w / 3, 2),2);
 
 
 }
@@ -208,39 +174,22 @@ static void window_load(Window *window) {
   //window_set_background_color(window, COLOR_FALLBACK(GColorPictonBlue, GColorWhite));
   GRect bounds = layer_get_bounds(window_layer);
 
-  //add the blue layer at the base
-  blue_layer = layer_create(GRect(bounds.origin.x, SCREEN_HEIGHT - level_height, bounds.size.w, bounds.size.h));
-  layer_set_update_proc(blue_layer, blue_layer_update_callback);
-  layer_add_child(window_layer, blue_layer);
-
-  //tick_layer
-  tick_layer = layer_create(bounds);
-  layer_set_update_proc(tick_layer, tick_layer_update_callback);
-  layer_add_child(window_layer, tick_layer);
-
-  //hands_layer
-  hands_layer = layer_create(bounds);
-  layer_set_update_proc(hands_layer, hands_layer_update_callback);
-  layer_add_child(window_layer, hands_layer);
-
-
   //create the event text layer
-  GRect tide_event_text_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT/2 + 20, 0, 0));
+  GRect tide_event_text_layer_bounds = GRect(SCREEN_WIDTH/3 - 40, SCREEN_HEIGHT * 3 / 4 - 20,
+                                             SCREEN_WIDTH/3 + 20, SCREEN_HEIGHT * 3 / 4 + 20);
   tide_event_text_layer = text_layer_create(tide_event_text_layer_bounds);
   text_layer_set_text(tide_event_text_layer, "Loading");
-  text_layer_set_font(tide_event_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_font(tide_event_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_background_color(tide_event_text_layer, GColorClear);
   text_layer_set_text_alignment(tide_event_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(tide_event_text_layer));
 
-    //create the date text layer
-  GRect date_text_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT/2 + 20, 0, 0));
-  date_text_layer = text_layer_create(tide_event_text_layer_bounds);
-  text_layer_set_text(date_text_layer, "");
-  text_layer_set_font(date_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_background_color(date_text_layer, GColorClear);
-  text_layer_set_text_alignment(date_text_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(date_text_layer));
+
+  //add the wave layer at the base
+  GRect wave_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT * 3 / 4, 0, 0));
+  wave_layer = layer_create(wave_layer_bounds);
+  layer_set_update_proc(wave_layer, wave_layer_update_callback);
+  layer_add_child(window_layer, wave_layer);
 
 
   //if there is already data cached and it is valid then load it
@@ -256,8 +205,6 @@ static void window_load(Window *window) {
       has_data = 1;
 
       update_display_data();
-      animation_unschedule_all();
-      animation_schedule(create_anim_water_level());
     }
     else{
         APP_LOG(APP_LOG_LEVEL_DEBUG, "Cached data was found but it is out of date.");
@@ -265,17 +212,15 @@ static void window_load(Window *window) {
   }
   
   if(has_data != 1){
-    animation_schedule(create_anim_load());
+    //load animation
   }
 
 }
 
 
 static void destroy_layers(){
-  layer_destroy(blue_layer);
-  layer_destroy(tick_layer);
+  layer_destroy(wave_layer);
   text_layer_destroy(tide_event_text_layer);
-  text_layer_destroy(date_text_layer);
 }
 
 static void init(void) {
