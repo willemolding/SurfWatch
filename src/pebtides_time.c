@@ -18,7 +18,6 @@ TideData tide_data;
 int current_height;
 
 // string buffers
-static char timestring[20];
 static char height_text[10];
 static char error_message[50];
 
@@ -149,10 +148,20 @@ static void wave_layer_update_callback(Layer *layer, GContext *ctx) {
   const int max_wave_height = 10;
   const int offset = 10;
   const float cycles = 1.5;
+
+
+  // There might be a bug in this part of the code... Check it properly layer after getting some sleep.
+  time_t t = time(NULL);
+  int low_t = get_time_to_next_low(&tide_data, t);
+  int T = get_tide_period(&tide_data, t);
+
+  int pixel_period = bounds.size.w / cycles;
+  int pixel_offset = pixel_period * (t - low_t) / (2*T); //the phase indicates how close it is to a low tide in pixels
+
   graphics_context_set_stroke_color(ctx,GColorPictonBlue);          
   graphics_context_set_stroke_width(ctx,1);
   for(int i = 0; i < bounds.size.w; i++){
-    int height = cos_lookup(i * TRIG_MAX_ANGLE * cycles / bounds.size.w) * max_wave_height / TRIG_MAX_RATIO;
+    int height = cos_lookup((i + pixel_offset) * TRIG_MAX_ANGLE * cycles / bounds.size.w) * max_wave_height / TRIG_MAX_RATIO;
     graphics_draw_line(ctx,GPoint(i, bounds.size.h),
                            GPoint(i, bounds.size.h / 2 - height - offset));      
   } 
@@ -251,9 +260,6 @@ static void deinit(void) {
 
 int main(void) {
   init();
-  timestring[0] = 'A';
-  timestring[1] = 'T';
-  timestring[2] = ' ';
 
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", window);
 
