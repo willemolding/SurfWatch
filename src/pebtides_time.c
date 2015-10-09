@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "tide_data.h"
+#include "tick_path.h"
 
 #define SCREEN_WIDTH 180
 #define SCREEN_HEIGHT 180
@@ -10,6 +11,29 @@ static Window *window;
 
 // layers for the load screen animation
 Layer *wave_layer;
+
+//////////////////////////////// From Chris
+// Windows and Layers
+static Layer *s_canvas_layer;
+static Layer *s_hands_layer;
+
+// Coordinate Paths
+static GPath *s_large_ticks;
+static GPath *s_small_ticks;
+static GPath *s_hour_hand;
+static GPath *s_minute_hand;
+static GPath *s_wind_ticks;
+static GPath *s_swell_ticks;
+
+// Textlayers
+static TextLayer *surf_label;
+static TextLayer *star_label;
+
+// Fonts
+static GFont s_surf_font_24;
+static GFont s_symbol_font_18;
+
+////////////////////////////////////////////
 
 // text layers to display the data
 TextLayer *tide_event_text_layer;
@@ -175,11 +199,131 @@ static void wave_layer_update_callback(Layer *layer, GContext *ctx) {
 
 }
 
+// Update the three clock hands
+static void hands_update_proc(Layer *layer, GContext *ctx) {
+  GRect bounds = layer_get_bounds(window_get_root_layer (window));
+  GPoint center = grect_center_point(&bounds);
+  
+  // Get the current time
+  time_t now = time(NULL);
+  struct tm *t = localtime(&now);
+  
+
+  const int hand_stroke_width = 2;
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_stroke_width(ctx, hand_stroke_width);
+  
+  // Draw hour hand
+  gpath_rotate_to(s_hour_hand, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  gpath_draw_outline(ctx, s_hour_hand);
+  
+  // Draw minute hand
+  gpath_rotate_to(s_minute_hand, TRIG_MAX_ANGLE * t->tm_min / 60);
+  gpath_draw_outline(ctx, s_minute_hand);
+  
+}
+
+static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
+  
+  GRect bounds = layer_get_bounds(window_get_root_layer (window));
+  
+  // Draw wind circle
+  graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
+  graphics_draw_circle(ctx, GPoint(((bounds.size.w / 4) * 3) - 5, ((bounds.size.h / 2) + 8)), 20);
+  
+  // Draw swell circle
+  graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
+  graphics_draw_circle(ctx, GPoint((bounds.size.w / 4) + 5, ((bounds.size.h / 2) + 8)), 20);
+  
+  // Draw large ticks
+  for (int c = 0; c < 4; c++){
+    #if defined(PBL_BW)
+      graphics_context_set_stroke_color(ctx, GColorBlack);
+    #elif defined(PBL_COLOR)
+      graphics_context_set_stroke_color(ctx, GColorBlack);
+    #endif
+    gpath_rotate_to(s_large_ticks, ((TRIG_MAX_ANGLE/4) * c ) + (TRIG_MAX_ANGLE/2));
+    gpath_draw_outline(ctx, s_large_ticks);
+  }
+  
+  // Draw wind ticks
+  for (int c = 0; c < 4; c++){
+    #if defined(PBL_BW)
+      graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
+    #elif defined(PBL_COLOR)
+      graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
+    #endif
+    gpath_rotate_to(s_wind_ticks, ((TRIG_MAX_ANGLE/4) * c ) + (TRIG_MAX_ANGLE/2));
+    gpath_draw_outline(ctx, s_wind_ticks);
+  }
+  
+  // Draw swell ticks
+  for (int c = 0; c < 4; c++){
+    #if defined(PBL_BW)
+      graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
+    #elif defined(PBL_COLOR)
+      graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
+    #endif
+    gpath_rotate_to(s_swell_ticks, ((TRIG_MAX_ANGLE/4) * c ) + (TRIG_MAX_ANGLE/2));
+    gpath_draw_outline(ctx, s_swell_ticks);
+  }
+  
+  // Draw small ticks
+  for (int c = 1; c < 12; c++){
+    #if defined(PBL_BW)
+      graphics_context_set_fill_color(ctx, GColorBlack);
+      graphics_context_set_stroke_color(ctx, GColorBlack);
+    #elif defined(PBL_COLOR)
+      graphics_context_set_fill_color(ctx, GColorBlack);
+      graphics_context_set_stroke_color(ctx, GColorBlack);
+    #endif
+    if((c != 3) || (c != 6) || (c != 6)){
+      gpath_rotate_to(s_small_ticks, ((TRIG_MAX_ANGLE/12) * c ) + (TRIG_MAX_ANGLE/2));
+      gpath_draw_outline(ctx, s_small_ticks);
+    }
+  }
+  
+  graphics_fill_radial(ctx, GRect((bounds.size.w / 2) - 3, (bounds.size.h / 2) - 3, 5, 5), GOvalScaleModeFitCircle, 5, 0, TRIG_MAX_ANGLE);
+  
+}
+
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
 
   GRect bounds = layer_get_bounds(window_layer);
+
+  ////////////////////////////////////// From Chris
+  // Load Font
+  s_surf_font_24 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GOTHAM_LIGHT_24));
+  s_symbol_font_18 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_SYMBOL_18));
+  
+  // Create the surf text layer
+  surf_label = text_layer_create(GRect((bounds.size.w / 4), (bounds.size.h / 4) - 15, (bounds.size.w / 2), 30));
+  text_layer_set_text(surf_label, "5-8 ft");
+  text_layer_set_text_color(surf_label, GColorDarkCandyAppleRed);
+  text_layer_set_font(surf_label, s_surf_font_24);
+  text_layer_set_text_alignment(surf_label, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(surf_label));
+  
+  // Create the star text layer
+  surf_label = text_layer_create(GRect(0, (bounds.size.h / 4) + 10, bounds.size.w, 50));
+  text_layer_set_text(surf_label, "b b b");
+  text_layer_set_font(surf_label, s_symbol_font_18);
+  text_layer_set_text_alignment(surf_label, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(surf_label));
+  
+  // Create background layer
+  s_canvas_layer = layer_create(GRect(0, 0, bounds.size.w, bounds.size.h));
+  layer_add_child(window_layer, s_canvas_layer);
+  layer_set_update_proc(s_canvas_layer, canvas_update_proc);
+  
+  // Create hands layer
+  s_hands_layer = layer_create(bounds);
+  layer_set_update_proc(s_hands_layer, hands_update_proc);
+  layer_add_child(window_layer, s_hands_layer);
+
+  //////////////////////////////////////////////////
 
   //create the event text layer
   GRect tide_event_text_layer_bounds = GRect(SCREEN_WIDTH/3 - 40, SCREEN_HEIGHT * 3 / 4 - 20,
@@ -228,9 +372,42 @@ static void window_load(Window *window) {
 static void destroy_layers(){
   layer_destroy(wave_layer);
   text_layer_destroy(tide_event_text_layer);
+
+  // Destroy Layers
+  layer_destroy(s_canvas_layer);
+  layer_destroy(s_hands_layer);
+  text_layer_destroy(surf_label);
+  text_layer_destroy(star_label);
+  
+  // Destroy fonts
+  fonts_unload_custom_font(s_surf_font_24);
+  fonts_unload_custom_font(s_symbol_font_18);
 }
 
+// Function to update the time
+static void update_time() {
+  // Get the current time
+  time_t temp = time(NULL); 
+  struct tm *tick_time = localtime(&temp);
+  
+  // Update the hands layer
+  layer_mark_dirty(s_hands_layer);
+}
+
+static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+  update_time();
+}
+
+
 static void init(void) {
+
+  // Create coordinate paths
+  s_large_ticks = gpath_create(&LARGE_TICKS);
+  s_small_ticks = gpath_create(&SMALL_TICKS);
+  s_hour_hand = gpath_create(&HOUR_HAND);
+  s_minute_hand = gpath_create(&MINUTE_HAND);
+  s_wind_ticks = gpath_create(&WIND_TICKS);
+  s_swell_ticks = gpath_create(&WIND_TICKS);
 
   window = window_create();
   window_set_window_handlers(window, (WindowHandlers) {
@@ -248,6 +425,22 @@ static void init(void) {
   }
 
   window_stack_push(window, animated);
+
+  // Center the coordinate paths
+  GRect bounds = layer_get_bounds(window_get_root_layer (window));
+  GPoint center = grect_center_point(&bounds);
+  gpath_move_to(s_large_ticks, center);
+  gpath_move_to(s_small_ticks, center);
+  gpath_move_to(s_hour_hand, center);
+  gpath_move_to(s_minute_hand, center);
+  gpath_move_to(s_wind_ticks, GPoint(((bounds.size.w / 4) * 3) - 5, ((bounds.size.h / 2) + 8)));
+  gpath_move_to(s_swell_ticks, GPoint((bounds.size.w / 4) + 5, ((bounds.size.h / 2) + 8)));
+  
+  // Register with TickTimerService
+  tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
+  
+  // Update the initial time
+  update_time();
 
 }
 

@@ -1,4 +1,6 @@
 var site_url = "http://pebtides-time-dev.herokuapp.com/";
+var magic_seaweed_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
+
 
 var lat = 0;
 var lon = 0;
@@ -34,7 +36,7 @@ function getInt32Bytes( x ) {
 }
 
 
-function send_data_to_pebble(response){
+function send_tide_data_to_pebble(response){
 
     console.log('data from server:');
     console.log(JSON.stringify(response));
@@ -91,7 +93,7 @@ function send_error_message_to_pebble(error_string){
     send_pebble_message(message);
 }
 
-function get_data_for_user(){
+function get_tide_data_for_user(){
 
     console.log('My token is ' + token);
 
@@ -105,7 +107,7 @@ function get_data_for_user(){
         // Success!
         console.log('Data recieved from server successfully.');
         var tide_data = JSON.parse(request.responseText);
-        send_data_to_pebble(tide_data);
+        send_tide_data_to_pebble(tide_data);
       }
       else if(request.status == 503){
         // there are no dynos running to respond
@@ -167,19 +169,19 @@ Pebble.addEventListener("ready",
                     console.log('Timeline token obtained.');
                     token = timeline_token;
                     timeline = 1;
-                    get_data_for_user();
+                    get_tide_data_for_user();
                 },
                 function (error) { 
                     console.log('Error getting timeline token: ' + error);
                     token = Pebble.getAccountToken();
-                    get_data_for_user();
+                    get_tide_data_for_user();
                 }
             );
         }
         else{
             console.log('Timeline token is not available for this watch');
             token = Pebble.getAccountToken();
-            get_data_for_user();
+            get_tide_data_for_user();
         }
     }
 );
@@ -208,6 +210,6 @@ Pebble.addEventListener('showConfiguration', function(e) {
 Pebble.addEventListener('webviewclosed',
   function(e) {
     console.log('Configuration window returned: ' + e.response);
-    get_data_for_user();
+    get_tide_data_for_user();
   }
 );

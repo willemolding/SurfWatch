@@ -60,13 +60,6 @@ int get_tide_at_time(TideData *tide_data, time_t t){
 		}
 	}
 
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", (int)t);
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", t1);
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", t2);
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", h1);
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", h2);
-
-
 	//if it couldn't be found then the data is not current
 	if(t1 < 0){
 		return TIDE_ERROR;
@@ -76,12 +69,46 @@ int get_tide_at_time(TideData *tide_data, time_t t){
 
 	int A = TRIG_MAX_ANGLE * ((float)(t - t1) / (t2 - t1) + 1) / 2;
 
-	APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", A);
-
-
 	int h = h1 + (h2 - h1) * ((float)cos_lookup(A) / TRIG_MAX_RATIO + 1.0) / 2;
 
 	return h;
 }
 
+//Returns the number of seconds to the next low tide
+int get_time_to_next_low(TideData *tide_data, time_t t){
+	// first locate the tide events occuring before and after the time
+	int t1=-1;
 
+	for(int i=1; i < tide_data->n_events; i++){
+		if(tide_data->events[i] == 0 && tide_data->times.values[i] > t){
+			t1 = tide_data->times.values[i];
+		}
+	}
+
+	//if it couldn't be found then the data is not current
+	if(t1 < 0){
+		return TIDE_ERROR;
+	}
+
+	return t1 - (int)t;
+}
+
+//Returns the number of seconds between current high and low tide
+int get_tide_period(TideData *tide_data, time_t t){
+	// first locate the tide events occuring before and after the time
+	int t1=-1,t2=-1;
+
+	for(int i=1; i < tide_data->n_events; i++){
+		if(tide_data->times.values[i-1] < t && tide_data->times.values[i] > t){
+			t1 = tide_data->times.values[i-1];
+			t2 = tide_data->times.values[i];
+		}
+	}
+
+	//if it couldn't be found then the data is not current
+	if(t1 < 0){
+		return TIDE_ERROR;
+	}
+
+	return t2 - t1;
+}

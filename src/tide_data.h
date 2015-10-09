@@ -40,4 +40,11 @@ int find_min(int *array, int n_elements);
 
 int find_max(int *array, int n_elements);
 
-int get_tide_at_time(TideData *tide_data, time_t time);
+//Returns the tide data at a given time
+int get_tide_at_time(TideData *tide_data, time_t t);
+
+//Returns the number of seconds to the next low tide
+int get_time_to_next_low(TideData *tide_data, time_t t);
+
+//Returns the number of seconds between a high and low tide
+int get_tide_period(TideData *tide_data, time_t t);
