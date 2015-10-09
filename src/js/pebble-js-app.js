@@ -1,7 +1,7 @@
 var site_url = "http://pebtides-time-dev.herokuapp.com/";
 var msw_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
 var msw_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
-var spot_ud = 539;
+var spot_id = 539;
 
 
 var lat = 0;
@@ -117,6 +117,9 @@ function send_error_message_to_pebble(error_string){
 }
 
 function get_surf_data_for_user(){
+
+  console.log('Loading surf data...');
+
   var request = new XMLHttpRequest();
   request.open('GET', msw_url+'?spot_id='+spot_id, true);
 
@@ -192,7 +195,7 @@ function get_tide_data_for_user(){
 Pebble.addEventListener("ready",
   
     function(e) {
-      
+
         //determine the current watch info. This is a hack until pebble fixes the bug.
         if(Pebble.getActiveWatchInfo) {
           try {
@@ -209,6 +212,10 @@ Pebble.addEventListener("ready",
         }
 
         console.log("running on " + current_watch.platform);
+        console.log("About to get surf data");
+
+        get_surf_data_for_user();
+
 
         //request current position
         navigator.geolocation.getCurrentPosition(function (pos){
@@ -240,7 +247,10 @@ Pebble.addEventListener("ready",
             token = Pebble.getAccountToken();
             get_tide_data_for_user();
         }
+
     }
+
+
 );
 
 
