@@ -52,6 +52,8 @@ static char swell_strength[] = "100";
 TextLayer *tide_event_text_layer;
 
 TideData tide_data;
+SurfData surf_data;
+
 int current_height;
 
 // string buffers
@@ -78,7 +80,7 @@ static void update_display_data() {
       snprintf(height_text,10,"-%d.%d%s",d1,d2, tide_data.unit);  
 
     text_layer_set_text(tide_event_text_layer, height_text);
-  
+    layer_mark_dirty(window_get_root_layer(window));
 }
 
 
@@ -133,6 +135,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   {
     switch (tuple->key) 
     {
+      //tide message data
       case NAME:
         strcpy(tide_data.name,tuple->value->cstring);
         break;
@@ -155,6 +158,36 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         strcpy(error_message,tuple->value->cstring);
         is_error = true;
         break;
+
+        //surf message data
+      case WIND_STRENGTH:
+        surf_data.wind_strength = tuple->value->uint16;
+        break;
+      case WIND_DIRECTION:
+        surf_data.wind_direction = tuple->value->uint16;
+        break;
+      case WIND_UNITS:
+        strcpy(surf_data.wind_units,tuple->value->cstring);
+        break;
+      case SWELL_STRENGTH:
+        surf_data.swell_strength = tuple->value->uint16;
+        break;
+      case SWELL_DIRECTION:
+        surf_data.swell_direction = tuple->value->uint16;
+        break;
+      case SWELL_UNITS:
+        strcpy(surf_data.swell_units,tuple->value->cstring);
+        break;
+      case SURF_RATING:
+        surf_data.surf_rating = tuple->value->uint16;
+        break;
+      case MIN_SURF_HEIGHT:
+        surf_data.min_surf_height = tuple->value->uint16;
+        break;
+      case MAX_SURF_HEIGHT:
+        surf_data.max_surf_height = tuple->value->uint16;
+        break;
+
     }
 
     tuple = dict_read_next(iterator);
@@ -331,7 +364,7 @@ static void window_load(Window *window) {
 
   GRect bounds = layer_get_bounds(window_layer);
 
-  
+
   //add the wave layer at the base
   GRect wave_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT * 3 / 4, 0, 0));
   wave_layer = layer_create(wave_layer_bounds);

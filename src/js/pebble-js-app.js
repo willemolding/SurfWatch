@@ -1,5 +1,7 @@
 var site_url = "http://pebtides-time-dev.herokuapp.com/";
-var magic_seaweed_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
+var msw_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
+var msw_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
+var spot_id = 539;
 
 
 var lat = 0;
@@ -84,6 +86,27 @@ function send_tide_data_to_pebble(response){
 
 }
 
+function send_surf_data_to_pebble(response){
+
+    console.log('data from server:');
+    console.log(JSON.stringify(response));
+
+    var message = {'WIND_STRENGTH' : Math.round(response.wind.speed),
+                  'WIND_DIRECTION' : Math.round(response.wind.direction),
+                  'WIND_UNITS' : response.wind.unit,
+                  'SWELL_STRENGTH' : Math.round(response.swell.components.combined.height),
+                  'SWELL_DIRECTION': Math.round(response.swell.components.combined.direction),
+                  'SWELL_UNITS' : response.swell.unit,
+                  'SURF_RATING' : response.fadedRating,
+                  'MIN_SURF_HEIGHT' : response.swell.minBreakingHeight,
+                  'MAX_SURF_HEIGHT' : response.swell.maxBreakingHeight}
+
+    console.log('pebble message is:');
+    console.log(JSON.stringify(message));
+
+    send_pebble_message(message);
+}
+
 function send_error_message_to_pebble(error_string){
     var message = { 'ERROR_MSG' : error_string};
 
@@ -91,6 +114,43 @@ function send_error_message_to_pebble(error_string){
     console.log(JSON.stringify(message));
 
     send_pebble_message(message);
+}
+
+function get_surf_data_for_user(){
+
+  console.log('Loading surf data...');
+
+  var request = new XMLHttpRequest();
+  request.open('GET', msw_url+'?spot_id='+spot_id, true);
+
+  request.onload = function() {
+      if (request.status >= 200 && request.status < 400) {
+        // Success!
+        console.log('Data recieved from server successfully.');
+        var surf_data = JSON.parse(request.responseText);
+        send_surf_data_to_pebble(surf_data[0]);
+      }
+      else if(request.status == 503){
+        console.log('Unknown server error');
+        send_error_message_to_pebble("Server Unavailable");
+      }
+      else if(request.status == 500) {
+        console.log('Unknown server error');
+        send_error_message_to_pebble("Server Unavailable");
+      }
+      else {
+        console.log('Unknown server error');
+        send_error_message_to_pebble("Server Unavailable");
+      }
+    };
+    request.onerror = function() {
+      // There was a connection error of some sort
+      console.log('Could not reach server.');
+      //send error message
+      send_error_message_to_pebble("Server Unavailable")
+    };
+    request.send();
+
 }
 
 function get_tide_data_for_user(){
@@ -135,7 +195,7 @@ function get_tide_data_for_user(){
 Pebble.addEventListener("ready",
   
     function(e) {
-      
+
         //determine the current watch info. This is a hack until pebble fixes the bug.
         if(Pebble.getActiveWatchInfo) {
           try {
@@ -152,6 +212,10 @@ Pebble.addEventListener("ready",
         }
 
         console.log("running on " + current_watch.platform);
+        console.log("About to get surf data");
+
+        get_surf_data_for_user();
+
 
         //request current position
         navigator.geolocation.getCurrentPosition(function (pos){
@@ -183,7 +247,10 @@ Pebble.addEventListener("ready",
             token = Pebble.getAccountToken();
             get_tide_data_for_user();
         }
+
     }
+
+
 );
 
 

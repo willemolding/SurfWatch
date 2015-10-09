@@ -1,23 +1,36 @@
 {
-    "appKeys": {
-        "ERROR_MSG": 6,
-        "EVENTS": 5,
-        "HEIGHTS": 4,
-        "LOCATION_NAME": 15,
-        "NAME": 0,
-        "N_EVENTS": 2,
-        "SURF_HEIGHT": 14,
-        "SURF_RATING": 13,
-        "SWELL_DIRECTION": 11,
-        "SWELL_STRENGTH": 10,
-        "SWELL_UNITS": 12,
-        "TIMES": 3,
-        "UNIT": 1,
-        "WIND_DIRECTION": 8,
-        "WIND_STRENGTH": 7,
-        "WIND_UNITS": 9
-    },
-    "capabilities": [
+  "uuid": "c54d0be0-5923-4027-b6ed-5e4d8d7202b5",
+  "shortName": "Tideface",
+  "longName": "Tideface",
+  "capabilities": [ "configurable", "location" ],
+  "companyName": "WillemOlding",
+  "versionLabel": "1.1",
+  "sdkVersion": "3",
+  "targetPlatforms": [ "basalt", "chalk"],
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "NAME": 0,
+    "UNIT": 1,
+    "N_EVENTS": 2,
+    "TIMES": 3,
+    "HEIGHTS" : 4,
+    "EVENTS" : 5,
+    "ERROR_MSG" : 6,
+
+    "WIND_STRENGTH" : 7,
+    "WIND_DIRECTION" : 8,
+    "WIND_UNITS" : 9,
+    "SWELL_STRENGTH" : 10,
+    "SWELL_DIRECTION": 11,
+    "SWELL_UNITS" : 12,
+    "SURF_RATING" : 13,
+    "MIN_SURF_HEIGHT" : 14,
+    "MAX_SURF_HEIGHT" : 15
+  },
+
+  "capabilities": [
         "location",
         "configurable"
     ],
