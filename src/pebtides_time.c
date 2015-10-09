@@ -1,10 +1,8 @@
 #include <pebble.h>
 #include "tide_data.h"
 #include "app_animations.h"
-#include "gpath_builder.h"
 
-#define MAX_POINTS 512
-#define N_WAVE_POINTS 10
+#define N_WAVE_POINTS 6
 
 // the text layers to display the info
 static Window *window;
@@ -145,44 +143,19 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
   APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
 }
 
-static void create_wave_path(){
-  // Create GPathBuilder object
-  GPathBuilder *builder = gpath_builder_create(MAX_POINTS);
-
-  //start at point 0
-  gpath_builder_move_to_point(builder, GPoint(0, 0));
-
-
-  const int d = SCREEN_WIDTH/N_WAVE_POINTS;
-  const int control_offset = 10;
-  const int wave_height = 5; 
-
-  for(int i = 1; i <= N_WAVE_POINTS; i++){
-      gpath_builder_curve_to_point(builder, GPoint(d*i, wave_height*(i % 2)), 
-                                            GPoint(d*i - d/2, wave_height*(i % 2) + control_offset), 
-                                            GPoint(d*i - d/2, wave_height*(i % 2) + control_offset));
-  }
-
-  //complete square
-  gpath_builder_line_to_point(builder, GPoint(SCREEN_WIDTH, SCREEN_HEIGHT));
-  gpath_builder_line_to_point(builder, GPoint(0, SCREEN_HEIGHT));
-  gpath_builder_line_to_point(builder, GPoint(0, SCREEN_HEIGHT));
-  gpath_builder_line_to_point(builder, GPoint(0, 0));
-
-  // Create GPath object out of our GPathBuilder object
-  s_my_path_ptr = gpath_builder_create_path(builder);
-  // Destroy GPathBuilder object
-  gpath_builder_destroy(builder);
-}
 
 static void blue_layer_update_callback(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_fill_color(ctx, COLOR_FALLBACK(GColorPictonBlue,GColorClear));
-  //graphics_fill_rect(ctx, bounds, 0, GCornerNone);
-  gpath_draw_filled(ctx, s_my_path_ptr);
-  // Stroke the path:
-  graphics_context_set_stroke_color(ctx, GColorBlack);
-  gpath_draw_outline(ctx, s_my_path_ptr);
+  graphics_context_set_fill_color(ctx, GColorPictonBlue);
+  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+
+  const int d = SCREEN_WIDTH/N_WAVE_POINTS;
+
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  for(int i = 0; i <= N_WAVE_POINTS; i++){
+    graphics_fill_circle(ctx,GPoint(i*d, 0), d/2 + 3);
+  }
+  
 }
 
 
@@ -190,7 +163,7 @@ static void tick_layer_update_callback(Layer *layer, GContext *ctx){
   GRect bounds = layer_get_bounds(layer);
   graphics_context_set_fill_color(ctx, GColorBlack);
   for(int i = 0; i < 12; i++){
-      graphics_fill_radial(ctx, grect_inset(bounds, GEdgeInsets(-3)), GOvalScaleModeFitCircle, 10,
+      graphics_fill_radial(ctx, grect_inset(bounds, GEdgeInsets(-3)), GOvalScaleModeFitCircle, 15,
         DEG_TO_TRIGANGLE(i*(360/12) - 1), DEG_TO_TRIGANGLE(i*(360/12) + 1));
   }
 }
@@ -228,8 +201,6 @@ static void hands_layer_update_callback(Layer *layer, GContext *ctx){
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
 
-  create_wave_path();
-
   //window_set_background_color(window, COLOR_FALLBACK(GColorPictonBlue, GColorWhite));
   GRect bounds = layer_get_bounds(window_layer);
 
@@ -250,7 +221,7 @@ static void window_load(Window *window) {
 
 
   //create the event text layer
-  GRect tide_event_text_layer_bounds = grect_inset(bounds, GEdgeInsets(50, 0));
+  GRect tide_event_text_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT/2 + 20, 50, 0));
   tide_event_text_layer = text_layer_create(tide_event_text_layer_bounds);
   text_layer_set_text(tide_event_text_layer, "Loading");
   text_layer_set_font(tide_event_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
