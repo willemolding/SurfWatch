@@ -173,14 +173,12 @@ static void wave_layer_update_callback(Layer *layer, GContext *ctx) {
                          GPoint(bounds.size.w / 3, bounds.size.h));
   graphics_draw_circle(ctx,GPoint(bounds.size.w / 3, 2),2);
 
-
 }
 
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
 
-  //window_set_background_color(window, COLOR_FALLBACK(GColorPictonBlue, GColorWhite));
   GRect bounds = layer_get_bounds(window_layer);
 
   //create the event text layer
