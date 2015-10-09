@@ -18,8 +18,8 @@
         "WIND_UNITS": 9
     },
     "capabilities": [
-        "configurable",
-        "location"
+        "location",
+        "configurable"
     ],
     "companyName": "WillemOlding",
     "longName": "Tideface",
