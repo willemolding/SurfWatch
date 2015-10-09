@@ -23,16 +23,28 @@ static GPath *s_large_ticks;
 static GPath *s_small_ticks;
 static GPath *s_hour_hand;
 static GPath *s_minute_hand;
+/*
 static GPath *s_wind_ticks;
 static GPath *s_swell_ticks;
+*/
 
 // Textlayers
 static TextLayer *surf_label;
 static TextLayer *star_label;
+static TextLayer *wind_label;
+static TextLayer *swell_label;
+static TextLayer *wind_units_label;
+static TextLayer *swell_units_label;
 
 // Fonts
 static GFont s_surf_font_24;
 static GFont s_symbol_font_18;
+
+// Surf Data
+static SurfData surfData = { .wind_direction = 45, .wind_strength = 25, .wind_units = "mph", .swell_direction = 270, .swell_strength = 6, .swell_units = "ft" };
+
+static char wind_strength[] = "100";
+static char swell_strength[] = "100";
 
 ////////////////////////////////////////////
 
@@ -243,7 +255,18 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
   
-
+  // Draw Wind Hand
+  int wind_direction = surfData.wind_direction;
+  GRect wind_hand = GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 40, 40);
+  graphics_context_set_fill_color(ctx, GColorCobaltBlue);
+  graphics_fill_radial(ctx, wind_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(wind_direction - 15), DEG_TO_TRIGANGLE(wind_direction + 15));
+  
+  // Draw Swell Hand
+  int swell_direction = surfData.swell_direction;
+  GRect swell_hand = GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 40, 40);
+  graphics_context_set_fill_color(ctx, GColorCobaltBlue);
+  graphics_fill_radial(ctx, swell_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(swell_direction - 15), DEG_TO_TRIGANGLE(swell_direction + 15));
+  
   const int hand_stroke_width = 2;
   graphics_context_set_stroke_color(ctx, GColorBlack);
   graphics_context_set_stroke_width(ctx, hand_stroke_width);
@@ -256,6 +279,15 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   gpath_rotate_to(s_minute_hand, TRIG_MAX_ANGLE * t->tm_min / 60);
   gpath_draw_outline(ctx, s_minute_hand);
   
+  const int hand_fill_width = 6;
+  graphics_context_set_stroke_width(ctx, hand_fill_width);
+  
+  GPoint minute_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, TRIG_MAX_ANGLE * t->tm_min / 60);
+  graphics_draw_line(ctx, center, minute_hand_fill);
+  
+  GPoint hour_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  graphics_draw_line(ctx, center, hour_hand_fill);
+  
 }
 
 static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
@@ -265,10 +297,12 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
   // Draw wind circle
   graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
   graphics_draw_circle(ctx, GPoint(((bounds.size.w / 4) * 3) - 5, ((bounds.size.h / 2) + 8)), 20);
+  graphics_draw_circle(ctx, GPoint(((bounds.size.w / 4) * 3) - 5, ((bounds.size.h / 2) + 8)), 15);
   
   // Draw swell circle
   graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
   graphics_draw_circle(ctx, GPoint((bounds.size.w / 4) + 5, ((bounds.size.h / 2) + 8)), 20);
+  graphics_draw_circle(ctx, GPoint((bounds.size.w / 4) + 5, ((bounds.size.h / 2) + 8)), 15);
   
   // Draw large ticks
   for (int c = 0; c < 4; c++){
@@ -281,6 +315,7 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
     gpath_draw_outline(ctx, s_large_ticks);
   }
   
+  /*
   // Draw wind ticks
   for (int c = 0; c < 4; c++){
     #if defined(PBL_BW)
@@ -302,6 +337,7 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
     gpath_rotate_to(s_swell_ticks, ((TRIG_MAX_ANGLE/4) * c ) + (TRIG_MAX_ANGLE/2));
     gpath_draw_outline(ctx, s_swell_ticks);
   }
+  */
   
   // Draw small ticks
   for (int c = 1; c < 12; c++){
@@ -354,6 +390,40 @@ static void window_load(Window *window) {
   text_layer_set_font(surf_label, s_symbol_font_18);
   text_layer_set_text_alignment(surf_label, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(surf_label));
+  
+  // Create the wind text layer
+  wind_label = text_layer_create(GRect(((bounds.size.w / 4) * 3) - 19, ((bounds.size.h / 2) - 8), 30, 15));
+  snprintf(wind_strength, sizeof(wind_strength), "%d", surfData.wind_strength);
+  text_layer_set_text(wind_label, wind_strength);
+  text_layer_set_background_color(wind_label, GColorClear);
+  text_layer_set_font(wind_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_alignment(wind_label, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(wind_label));
+  
+  // Create the wind units text layer
+  wind_units_label = text_layer_create(GRect(((bounds.size.w / 4) * 3) - 19, ((bounds.size.h / 2) + 5), 30, 15));
+  text_layer_set_text(wind_units_label, surfData.wind_units);
+  text_layer_set_background_color(wind_units_label, GColorClear);
+  text_layer_set_font(wind_units_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_alignment(wind_units_label, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(wind_units_label));
+  
+  // Create the swell text layer
+  swell_label = text_layer_create(GRect((bounds.size.w / 4) - 10, ((bounds.size.h / 2) - 7), 30, 15));
+  snprintf(swell_strength, sizeof(swell_strength), "%d", surfData.swell_strength);
+  text_layer_set_text(swell_label, swell_strength);
+  text_layer_set_background_color(swell_label, GColorClear);
+  text_layer_set_font(swell_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_alignment(swell_label, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(swell_label));
+  
+  // Create the swell units text layer
+  swell_units_label = text_layer_create(GRect((bounds.size.w / 4) - 10, ((bounds.size.h / 2) + 5), 30, 15));
+  text_layer_set_text(swell_units_label, surfData.swell_units);
+  text_layer_set_background_color(swell_units_label, GColorClear);
+  text_layer_set_font(swell_units_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_alignment(swell_units_label, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(swell_units_label));
   
   // Create background layer
   s_canvas_layer = layer_create(GRect(0, 0, bounds.size.w, bounds.size.h));
@@ -441,8 +511,10 @@ static void init(void) {
   s_small_ticks = gpath_create(&SMALL_TICKS);
   s_hour_hand = gpath_create(&HOUR_HAND);
   s_minute_hand = gpath_create(&MINUTE_HAND);
+  /*
   s_wind_ticks = gpath_create(&WIND_TICKS);
   s_swell_ticks = gpath_create(&WIND_TICKS);
+  */
 
   window = window_create();
   window_set_window_handlers(window, (WindowHandlers) {
@@ -468,8 +540,10 @@ static void init(void) {
   gpath_move_to(s_small_ticks, center);
   gpath_move_to(s_hour_hand, center);
   gpath_move_to(s_minute_hand, center);
+  /*
   gpath_move_to(s_wind_ticks, GPoint(((bounds.size.w / 4) * 3) - 5, ((bounds.size.h / 2) + 8)));
   gpath_move_to(s_swell_ticks, GPoint((bounds.size.w / 4) + 5, ((bounds.size.h / 2) + 8)));
+  */
   
   // Register with TickTimerService
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);

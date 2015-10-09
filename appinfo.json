@@ -29,29 +29,48 @@
     "MIN_SURF_HEIGHT" : 14,
     "MAX_SURF_HEIGHT" : 15
   },
-  "resources": {
-    "media": [
-    {
-      "menuIcon": true,
-      "type": "png",
-      "name": "IMAGE_MENU_ICON",
-      "file": "images/menu_icon.png"
+
+  "capabilities": [
+        "location",
+        "configurable"
+    ],
+    "companyName": "WillemOlding",
+    "longName": "Tideface",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "fonts/gotham",
+                "name": "FONT_GOTHAM_LIGHT_24",
+                "type": "font"
+            },
+            {
+                "file": "images/warning.png",
+                "name": "WARNING",
+                "type": "png"
+            },
+            {
+                "file": "images/menu_icon.png",
+                "menuIcon": true,
+                "name": "IMAGE_MENU_ICON",
+                "type": "png"
+            },
+            {
+                "file": "fonts/symbol",
+                "name": "FONT_SYMBOL_18",
+                "type": "font"
+            }
+        ]
     },
-    {
-      "type": "png",
-      "name": "WARNING",
-      "file": "images/warning.png"
-    },
-    {
-    "file": "fonts/symbol",
-    "name": "FONT_SYMBOL_18",
-    "type": "font"
-    },
-    {
-    "file": "fonts/gotham",
-    "name": "FONT_GOTHAM_LIGHT_24",
-    "type": "font"
+    "sdkVersion": "3",
+    "shortName": "Tideface",
+    "targetPlatforms": [
+        "basalt",
+        "chalk"
+    ],
+    "uuid": "c54d0be0-5923-4027-b6ed-5e4d8d7202b5",
+    "versionLabel": "1.1",
+    "watchapp": {
+        "watchface": true
     }
-    ]
-  }
 }
