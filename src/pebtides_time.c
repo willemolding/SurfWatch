@@ -1,6 +1,10 @@
 #include <pebble.h>
 #include "tide_data.h"
 #include "app_animations.h"
+#include "gpath_builder.h"
+
+#define MAX_POINTS 512
+#define N_WAVE_POINTS 10
 
 // the text layers to display the info
 static Window *window;
@@ -26,6 +30,7 @@ int level_height = SCREEN_HEIGHT / 2; // how many pixels above the bottom to dra
 int min_height = 10000;
 int max_height = 0;
 int has_data = 0;
+static GPath *s_my_path_ptr = NULL;
 
 static void update_display_data() {
     time_t t = time(NULL);
@@ -140,10 +145,44 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
   APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
 }
 
+static void create_wave_path(){
+  // Create GPathBuilder object
+  GPathBuilder *builder = gpath_builder_create(MAX_POINTS);
+
+  //start at point 0
+  gpath_builder_move_to_point(builder, GPoint(0, 0));
+
+
+  const int d = SCREEN_WIDTH/N_WAVE_POINTS;
+  const int control_offset = 10;
+  const int wave_height = 5; 
+
+  for(int i = 1; i <= N_WAVE_POINTS; i++){
+      gpath_builder_curve_to_point(builder, GPoint(d*i, wave_height*(i % 2)), 
+                                            GPoint(d*i - d/2, wave_height*(i % 2) + control_offset), 
+                                            GPoint(d*i - d/2, wave_height*(i % 2) + control_offset));
+  }
+
+  //complete square
+  gpath_builder_line_to_point(builder, GPoint(SCREEN_WIDTH, SCREEN_HEIGHT));
+  gpath_builder_line_to_point(builder, GPoint(0, SCREEN_HEIGHT));
+  gpath_builder_line_to_point(builder, GPoint(0, SCREEN_HEIGHT));
+  gpath_builder_line_to_point(builder, GPoint(0, 0));
+
+  // Create GPath object out of our GPathBuilder object
+  s_my_path_ptr = gpath_builder_create_path(builder);
+  // Destroy GPathBuilder object
+  gpath_builder_destroy(builder);
+}
+
 static void blue_layer_update_callback(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   graphics_context_set_fill_color(ctx, COLOR_FALLBACK(GColorPictonBlue,GColorClear));
-  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+  //graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+  gpath_draw_filled(ctx, s_my_path_ptr);
+  // Stroke the path:
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  gpath_draw_outline(ctx, s_my_path_ptr);
 }
 
 
@@ -166,7 +205,7 @@ static void hands_layer_update_callback(Layer *layer, GContext *ctx){
   time_t timestamp = time(NULL);
   struct tm *t = localtime(&timestamp);
 
-  int32_t hour_angle = TRIG_MAX_ANGLE * t->tm_hour / 12;
+  int32_t hour_angle = TRIG_MAX_ANGLE * (t->tm_hour % 12) / 12;
   int32_t minute_angle = TRIG_MAX_ANGLE * t->tm_min / 60;
 
   GPoint hour_point = gpoint_from_polar(grect_inset(bounds, GEdgeInsets(30)), 
@@ -188,6 +227,8 @@ static void hands_layer_update_callback(Layer *layer, GContext *ctx){
 
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
+
+  create_wave_path();
 
   //window_set_background_color(window, COLOR_FALLBACK(GColorPictonBlue, GColorWhite));
   GRect bounds = layer_get_bounds(window_layer);

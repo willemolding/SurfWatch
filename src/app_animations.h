@@ -2,8 +2,8 @@
 #include <pebble.h>
 #include "tide_data.h"
 
-#define SCREEN_WIDTH 144
-#define SCREEN_HEIGHT 168
+#define SCREEN_WIDTH 180
+#define SCREEN_HEIGHT 180
 
 #define MIN_LEVEL 30
 #define MAX_LEVEL 130
