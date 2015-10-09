@@ -14,6 +14,7 @@ Layer *hands_layer;
 
 // text layers to display the data
 TextLayer *tide_event_text_layer;
+TextLayer *date_text_layer;
 
 TideData tide_data;
 int current_height;
@@ -89,6 +90,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   Tuple *tuple = dict_read_first(iterator);
   bool is_error = false;
 
+  if(has_data == 1){ //don't bother if there is already valid data cached on the watch
+    return;
+  }
+
   //read in the data from the message using the dictionary iterator
   while (tuple) 
   {
@@ -143,7 +148,6 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
   APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
 }
 
-
 static void blue_layer_update_callback(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   graphics_context_set_fill_color(ctx, GColorPictonBlue);
@@ -155,7 +159,6 @@ static void blue_layer_update_callback(Layer *layer, GContext *ctx) {
   for(int i = 0; i <= N_WAVE_POINTS; i++){
     graphics_fill_circle(ctx,GPoint(i*d, 0), d/2 + 3);
   }
-  
 }
 
 
@@ -170,10 +173,11 @@ static void tick_layer_update_callback(Layer *layer, GContext *ctx){
 
 static void hands_layer_update_callback(Layer *layer, GContext *ctx){
   GRect bounds = layer_get_bounds(layer);
-  GPoint center = GPoint(180/2,180/2);
+  GPoint center = GPoint(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
 
-  // graphics_fill_radial(ctx, grect_inset(bounds, GEdgeInsets(80)), GOvalScaleModeFitCircle, 20,
-  //       DEG_TO_TRIGANGLE(0), DEG_TO_TRIGANGLE(360));
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_radial(ctx, grect_inset(bounds, GEdgeInsets(60)), GOvalScaleModeFitCircle, 60,
+        DEG_TO_TRIGANGLE(0), DEG_TO_TRIGANGLE(360));
 
   time_t timestamp = time(NULL);
   struct tm *t = localtime(&timestamp);
@@ -221,7 +225,7 @@ static void window_load(Window *window) {
 
 
   //create the event text layer
-  GRect tide_event_text_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT/2 + 20, 50, 0));
+  GRect tide_event_text_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT/2 + 20, 0, 0));
   tide_event_text_layer = text_layer_create(tide_event_text_layer_bounds);
   text_layer_set_text(tide_event_text_layer, "Loading");
   text_layer_set_font(tide_event_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
@@ -229,9 +233,41 @@ static void window_load(Window *window) {
   text_layer_set_text_alignment(tide_event_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(tide_event_text_layer));
 
+    //create the date text layer
+  GRect date_text_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT/2 + 20, 0, 0));
+  date_text_layer = text_layer_create(tide_event_text_layer_bounds);
+  text_layer_set_text(date_text_layer, "");
+  text_layer_set_font(date_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_background_color(date_text_layer, GColorClear);
+  text_layer_set_text_alignment(date_text_layer, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(date_text_layer));
 
-  //start the loading animation
-  animation_schedule(create_anim_load());
+
+  //if there is already data cached and it is valid then load it
+  if(load_tide_data(&tide_data)) {
+    time_t t = time(NULL);
+    current_height = get_tide_at_time(&tide_data, t);
+    if(current_height != -1){
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "Valid cached data found.");
+
+      min_height = find_min(tide_data.heights.values, tide_data.n_events);
+      max_height = find_max(tide_data.heights.values, tide_data.n_events);    
+
+      has_data = 1;
+
+      update_display_data();
+      animation_unschedule_all();
+      animation_schedule(create_anim_water_level());
+    }
+    else{
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "Cached data was found but it is out of date.");
+    }
+  }
+  
+  if(has_data != 1){
+    animation_schedule(create_anim_load());
+  }
+
 }
 
 
@@ -239,6 +275,7 @@ static void destroy_layers(){
   layer_destroy(blue_layer);
   layer_destroy(tick_layer);
   text_layer_destroy(tide_event_text_layer);
+  text_layer_destroy(date_text_layer);
 }
 
 static void init(void) {
@@ -256,11 +293,6 @@ static void init(void) {
 
   if(!bluetooth_connection_service_peek()){
     push_error("No phone connection");
-  }
-
-  // displays cached data before waiting for more. This makes data still available without phone connection.
-  if(load_tide_data(&tide_data)) {
-    has_data = 1;
   }
 
   window_stack_push(window, animated);
