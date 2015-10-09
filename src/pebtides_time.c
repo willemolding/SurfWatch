@@ -293,6 +293,13 @@ static void window_load(Window *window) {
 
   GRect bounds = layer_get_bounds(window_layer);
 
+  
+  //add the wave layer at the base
+  GRect wave_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT * 3 / 4, 0, 0));
+  wave_layer = layer_create(wave_layer_bounds);
+  layer_set_update_proc(wave_layer, wave_layer_update_callback);
+  layer_add_child(window_layer, wave_layer);
+
   ////////////////////////////////////// From Chris
   // Load Font
   s_surf_font_24 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_GOTHAM_LIGHT_24));
@@ -334,13 +341,6 @@ static void window_load(Window *window) {
   text_layer_set_background_color(tide_event_text_layer, GColorClear);
   text_layer_set_text_alignment(tide_event_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(tide_event_text_layer));
-
-
-  //add the wave layer at the base
-  GRect wave_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT * 3 / 4, 0, 0));
-  wave_layer = layer_create(wave_layer_bounds);
-  layer_set_update_proc(wave_layer, wave_layer_update_callback);
-  layer_add_child(window_layer, wave_layer);
 
 
   //if there is already data cached and it is valid then load it
