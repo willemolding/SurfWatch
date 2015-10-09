@@ -21,6 +21,7 @@ Common symbol       size              file
 wave_layer          0x4               src/pebtides_time.c.12.o
 tide_event_text_layer
                     0x4               src/pebtides_time.c.12.o
+surf_data           0x14              src/pebtides_time.c.12.o
 current_height      0x4               src/pebtides_time.c.12.o
 tide_data           0xec              src/pebtides_time.c.12.o
 
@@ -1468,7 +1469,7 @@ LOAD /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.
  .got.plt       0x0000000000002140        0xc /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtbegin.o
                 0x0000000000002140                _GLOBAL_OFFSET_TABLE_
 
-.bss            0x000000000000214c      0x174
+.bss            0x000000000000214c      0x188
  *(.bss)
  *(.bss.*)
  .bss.surf_label
@@ -1507,11 +1508,12 @@ LOAD /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.
  *fill*         0x00000000000021c2        0x2 
  .bss.s_large_ticks
                 0x00000000000021c4        0x4 src/pebtides_time.c.12.o
- COMMON         0x00000000000021c8       0xf8 src/pebtides_time.c.12.o
+ COMMON         0x00000000000021c8      0x10c src/pebtides_time.c.12.o
                 0x00000000000021c8                wave_layer
                 0x00000000000021cc                tide_event_text_layer
-                0x00000000000021d0                current_height
-                0x00000000000021d4                tide_data
+                0x00000000000021d0                surf_data
+                0x00000000000021e4                current_height
+                0x00000000000021e8                tide_data
 
 DISCARD
  libc.a(*)
@@ -1559,27 +1561,27 @@ OUTPUT(/Users/willemolding/Dropbox/Pebble/Pebtides_Time/Tideface/build/basalt/pe
  .comment       0x0000000000000000       0x4f basalt/appinfo.auto.c.12.o
  .comment       0x0000000000000000       0x4f /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/crtend.o
 
-.debug_info     0x0000000000000000     0x3398
- .debug_info    0x0000000000000000     0x246b src/pebtides_time.c.12.o
- .debug_info    0x000000000000246b      0x791 src/tide_data.c.12.o
- .debug_info    0x0000000000002bfc      0x346 basalt/appinfo.auto.c.12.o
- .debug_info    0x0000000000002f42       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
- .debug_info    0x0000000000002ffb       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
- .debug_info    0x00000000000030b4       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
- .debug_info    0x000000000000316d       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
- .debug_info    0x0000000000003226       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
- .debug_info    0x00000000000032df       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+.debug_info     0x0000000000000000     0x3442
+ .debug_info    0x0000000000000000     0x2515 src/pebtides_time.c.12.o
+ .debug_info    0x0000000000002515      0x791 src/tide_data.c.12.o
+ .debug_info    0x0000000000002ca6      0x346 basalt/appinfo.auto.c.12.o
+ .debug_info    0x0000000000002fec       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+ .debug_info    0x00000000000030a5       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+ .debug_info    0x000000000000315e       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+ .debug_info    0x0000000000003217       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+ .debug_info    0x00000000000032d0       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
+ .debug_info    0x0000000000003389       0xb9 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
 
-.debug_abbrev   0x0000000000000000      0x7d0
- .debug_abbrev  0x0000000000000000      0x4ab src/pebtides_time.c.12.o
- .debug_abbrev  0x00000000000004ab      0x20f src/tide_data.c.12.o
- .debug_abbrev  0x00000000000006ba       0x9e basalt/appinfo.auto.c.12.o
- .debug_abbrev  0x0000000000000758       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
- .debug_abbrev  0x000000000000076c       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
- .debug_abbrev  0x0000000000000780       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
- .debug_abbrev  0x0000000000000794       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
- .debug_abbrev  0x00000000000007a8       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
- .debug_abbrev  0x00000000000007bc       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+.debug_abbrev   0x0000000000000000      0x7df
+ .debug_abbrev  0x0000000000000000      0x4ba src/pebtides_time.c.12.o
+ .debug_abbrev  0x00000000000004ba      0x20f src/tide_data.c.12.o
+ .debug_abbrev  0x00000000000006c9       0x9e basalt/appinfo.auto.c.12.o
+ .debug_abbrev  0x0000000000000767       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+ .debug_abbrev  0x000000000000077b       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+ .debug_abbrev  0x000000000000078f       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+ .debug_abbrev  0x00000000000007a3       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+ .debug_abbrev  0x00000000000007b7       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
+ .debug_abbrev  0x00000000000007cb       0x14 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
 
 .debug_loc      0x0000000000000000      0xb94
  .debug_loc     0x0000000000000000      0x775 src/pebtides_time.c.12.o
@@ -1609,23 +1611,23 @@ OUTPUT(/Users/willemolding/Dropbox/Pebble/Pebtides_Time/Tideface/build/basalt/pe
  .debug_ranges  0x0000000000000000      0x178 src/pebtides_time.c.12.o
  .debug_ranges  0x0000000000000178       0x58 src/tide_data.c.12.o
 
-.debug_line     0x0000000000000000     0x114d
- .debug_line    0x0000000000000000      0x581 src/pebtides_time.c.12.o
- .debug_line    0x0000000000000581      0x2ea src/tide_data.c.12.o
- .debug_line    0x000000000000086b      0x135 basalt/appinfo.auto.c.12.o
- .debug_line    0x00000000000009a0      0x20a /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
- .debug_line    0x0000000000000baa      0x226 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
- .debug_line    0x0000000000000dd0       0x86 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
- .debug_line    0x0000000000000e56      0x128 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
- .debug_line    0x0000000000000f7e      0x149 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
- .debug_line    0x00000000000010c7       0x86 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
+.debug_line     0x0000000000000000     0x115c
+ .debug_line    0x0000000000000000      0x590 src/pebtides_time.c.12.o
+ .debug_line    0x0000000000000590      0x2ea src/tide_data.c.12.o
+ .debug_line    0x000000000000087a      0x135 basalt/appinfo.auto.c.12.o
+ .debug_line    0x00000000000009af      0x20a /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubdf3.o)
+ .debug_line    0x0000000000000bb9      0x226 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivdf3.o)
+ .debug_line    0x0000000000000ddf       0x86 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixdfsi.o)
+ .debug_line    0x0000000000000e65      0x128 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_addsubsf3.o)
+ .debug_line    0x0000000000000f8d      0x149 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_muldivsf3.o)
+ .debug_line    0x00000000000010d6       0x86 /Users/willemolding/pebble-dev/arm-cs-tools/bin/../lib/gcc/arm-none-eabi/4.7.2/thumb2/libgcc.a(_arm_fixsfsi.o)
 
-.debug_str      0x0000000000000000     0x1351
- .debug_str     0x0000000000000000     0x1097 src/pebtides_time.c.12.o
-                                       0x1191 (size before relaxing)
- .debug_str     0x0000000000001097       0xad src/tide_data.c.12.o
+.debug_str      0x0000000000000000     0x13cf
+ .debug_str     0x0000000000000000     0x1115 src/pebtides_time.c.12.o
+                                       0x120f (size before relaxing)
+ .debug_str     0x0000000000001115       0xad src/tide_data.c.12.o
                                         0x32c (size before relaxing)
- .debug_str     0x0000000000001144      0x20d basalt/appinfo.auto.c.12.o
+ .debug_str     0x00000000000011c2      0x20d basalt/appinfo.auto.c.12.o
                                         0x3b4 (size before relaxing)
 
 .debug_frame    0x0000000000000000      0x250

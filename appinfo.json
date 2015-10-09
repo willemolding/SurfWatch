@@ -26,8 +26,8 @@
     "SWELL_DIRECTION": 11,
     "SWELL_UNITS" : 12,
     "SURF_RATING" : 13,
-    "SURF_HEIGHT" : 14,
-    "LOCATION_NAME" : 15
+    "MIN_SURF_HEIGHT" : 14,
+    "MAX_SURF_HEIGHT" : 15
   },
   "resources": {
     "media": [

@@ -1,6 +1,7 @@
 #include <pebble.h>
 #include "tide_data.h"
 #include "tick_path.h"
+#include "surf_data.h"
 
 #define SCREEN_WIDTH 180
 #define SCREEN_HEIGHT 180
@@ -39,6 +40,8 @@ static GFont s_symbol_font_18;
 TextLayer *tide_event_text_layer;
 
 TideData tide_data;
+SurfData surf_data;
+
 int current_height;
 
 // string buffers
@@ -293,7 +296,7 @@ static void window_load(Window *window) {
 
   GRect bounds = layer_get_bounds(window_layer);
 
-  
+
   //add the wave layer at the base
   GRect wave_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT * 3 / 4, 0, 0));
   wave_layer = layer_create(wave_layer_bounds);
