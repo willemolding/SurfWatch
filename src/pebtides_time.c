@@ -78,6 +78,7 @@ static void update_display_data() {
       snprintf(height_text,10,"-%d.%d%s",d1,d2, tide_data.unit);  
 
     text_layer_set_text(tide_event_text_layer, height_text);
+  
 }
 
 
@@ -221,6 +222,18 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
   
+  // Draw Wind Hand
+  int wind_direction = surfData.wind_direction;
+  GRect wind_hand = GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 40, 40);
+  graphics_context_set_fill_color(ctx, GColorCobaltBlue);
+  graphics_fill_radial(ctx, wind_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(wind_direction - 15), DEG_TO_TRIGANGLE(wind_direction + 15));
+  
+  // Draw Swell Hand
+  int swell_direction = surfData.swell_direction;
+  GRect swell_hand = GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 40, 40);
+  graphics_context_set_fill_color(ctx, GColorCobaltBlue);
+  graphics_fill_radial(ctx, swell_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(swell_direction - 15), DEG_TO_TRIGANGLE(swell_direction + 15));
+  
   const int hand_stroke_width = 2;
   graphics_context_set_stroke_color(ctx, GColorBlack);
   graphics_context_set_stroke_width(ctx, hand_stroke_width);
@@ -241,19 +254,6 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   
   GPoint hour_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
   graphics_draw_line(ctx, center, hour_hand_fill);
-  
-  // Draw Wind Hand
-  // surfData.wind_strength
-  int wind_direction = surfData.wind_direction;
-  GRect wind_hand = GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 40, 40);
-  graphics_context_set_fill_color(ctx, GColorCobaltBlue);
-  graphics_fill_radial(ctx, wind_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(wind_direction - 15), DEG_TO_TRIGANGLE(wind_direction + 15));
-  
-  // Draw Swell Hand
-  int swell_direction = surfData.swell_direction;
-  GRect swell_hand = GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 40, 40);
-  graphics_context_set_fill_color(ctx, GColorCobaltBlue);
-  graphics_fill_radial(ctx, swell_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(swell_direction - 15), DEG_TO_TRIGANGLE(swell_direction + 15));
   
 }
 

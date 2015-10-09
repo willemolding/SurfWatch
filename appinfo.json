@@ -27,6 +27,11 @@
     "resources": {
         "media": [
             {
+                "file": "fonts/gotham",
+                "name": "FONT_GOTHAM_LIGHT_24",
+                "type": "font"
+            },
+            {
                 "file": "images/warning.png",
                 "name": "WARNING",
                 "type": "png"
@@ -40,11 +45,6 @@
             {
                 "file": "fonts/symbol",
                 "name": "FONT_SYMBOL_18",
-                "type": "font"
-            },
-            {
-                "file": "fonts/gotham",
-                "name": "FONT_GOTHAM_LIGHT_24",
                 "type": "font"
             }
         ]
