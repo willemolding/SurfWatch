@@ -43,7 +43,7 @@ static GFont s_symbol_font_18;
 // Surf Data
 static char wind_strength[] = "100";
 static char swell_strength[] = "100";
-static char surf_rating[] = "b b b b b b b b";
+static char surf_rating[] = "b b b b b b b b b b";
 ////////////////////////////////////////////
 
 // text layers to display the data
@@ -61,10 +61,6 @@ int current_height;
 static char height_text[10];
 static char error_message[50];
 
-// other random global vars
-int level_height = SCREEN_HEIGHT / 2; // how many pixels above the bottom to draw the blue layer
-int min_height = 10000;
-int max_height = 0;
 int has_data = 0;
 
 static void update_display_data() {
@@ -137,10 +133,6 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   Tuple *tuple = dict_read_first(iterator);
   bool is_error = false;
 
-  if(has_data == 1){ //don't bother if there is already valid data cached on the watch
-    return;
-  }
-
   //read in the data from the message using the dictionary iterator
   while (tuple) 
   {
@@ -206,17 +198,15 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
   if(is_error == false) {
 
-  	min_height = find_min(tide_data.heights.values, tide_data.n_events);
-  	max_height = find_max(tide_data.heights.values, tide_data.n_events);    
-
     has_data = 1;
     store_tide_data(&tide_data);
-
-    update_display_data();
   }
   else { // push an error message window to the stack
       push_error(error_message);
   }
+
+  update_display_data();
+
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
@@ -466,9 +456,6 @@ static void window_load(Window *window) {
     current_height = get_tide_at_time(&tide_data, t);
     if(current_height != -1){
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Valid cached data found.");
-
-      min_height = find_min(tide_data.heights.values, tide_data.n_events);
-      max_height = find_max(tide_data.heights.values, tide_data.n_events);    
 
       has_data = 1;
 
