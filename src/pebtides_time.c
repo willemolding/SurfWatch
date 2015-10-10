@@ -60,6 +60,7 @@ int current_height;
 static char height_text[10];
 static char error_message[50];
 
+
 int has_data = 0;
 
 static void update_display_data() {
