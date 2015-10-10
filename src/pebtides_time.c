@@ -81,31 +81,25 @@ float getRadius(int a, int b, int theta) {
 }
 
 static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *info){
-  // 90, bounds, 1
-  // theta = 185;
-  theta = 90;
   int b = bounds.size.w;
   int a = bounds.size.h;
   APP_LOG(APP_LOG_LEVEL_DEBUG, "a = %d and b = %d", a, b);
   
-  
   float value = (getRadius(a, b, theta)) / 2;
+  
   int max = (int)value - 8;
   if(hand == 2){
     max = max / 2;
   }
   int min;
   if(max >= 0){
-    max = (max * (-1)) - 8;
+    max = (max * (-1));
     min = max + 5;
   } else {
-    max = (max * (-1)) + 8;
+    max = (max * (-1));
     min = max - 5;
   }
   
-
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "When angle is %d and the hand is %d the length is %d", TRIGANGLE_TO_DEG(theta), hand, max);
-
   info->points[2].y = min;
   info->points[3].y = max;
   info->points[4].y = max;
