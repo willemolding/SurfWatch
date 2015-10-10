@@ -45,7 +45,6 @@ static GFont s_symbol_font_18;
 static char wind_strength[] = "100";
 static char swell_strength[] = "100";
 static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
-static char wave_height_text[30];
 
 ////////////////////////////////////////////
 
@@ -73,14 +72,11 @@ float my_sqrt(const float num) {
     ans_sqr = answer * answer;
   }
   return answer;
-
 }
 
 float getRadius(int a, int b, int theta) {
-
      float s = (float)sin_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
      float c = (float)cos_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
-
      return (a * b) / (my_sqrt((a*a)*(s*s)+(b*b)*(c*c)));
 }
 
@@ -92,10 +88,8 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
   APP_LOG(APP_LOG_LEVEL_DEBUG, "a = %d and b = %d", a, b);
   
   
-
-  float value = (getRadius(a, b, TRIGANGLE_TO_DEG(theta)));
-  int max = (int)value;
-  
+  float value = (getRadius(a, b, theta)) / 2;
+  int max = (int)value - 8;
   if(hand == 2){
     max = max / 2;
   }
@@ -140,14 +134,9 @@ static void update_display_data() {
         }
     }
 
-
-    //update the wave height string
-    snprintf(wave_height_text, sizeof(wave_height_text), "%d-%d", 
-      (int)surf_data.min_surf_height, (int)surf_data.max_surf_height);
-    strcat(wave_height_text, surf_data.swell_units);
-
     text_layer_set_text(star_label, star_string);
     text_layer_set_text(tide_event_text_layer, height_text);
+    layer_mark_dirty(window_get_root_layer(window));
   
     text_layer_set_text(wind_units_label, surf_data.wind_units);
     text_layer_set_text(swell_units_label, surf_data.swell_units);
@@ -158,8 +147,6 @@ static void update_display_data() {
     snprintf(swell_strength, sizeof(swell_strength), "%d", surf_data.swell_strength);
     text_layer_set_text(swell_label, swell_strength);
   
-    layer_mark_dirty(window_get_root_layer(window));
-
 }
 
 
@@ -457,7 +444,7 @@ static void window_load(Window *window) {
   
   // Create the surf text layer
   surf_label = text_layer_create(GRect((bounds.size.w / 4), (bounds.size.h / 4) - 15, (bounds.size.w / 2), 30));
-  text_layer_set_text(surf_label, wave_height_text);
+  text_layer_set_text(surf_label, "5-8 ft");
   text_layer_set_text_color(surf_label, GColorDarkCandyAppleRed);
   text_layer_set_font(surf_label, s_surf_font_24);
   text_layer_set_text_alignment(surf_label, GTextAlignmentCenter);
