@@ -73,11 +73,14 @@ float my_sqrt(const float num) {
     ans_sqr = answer * answer;
   }
   return answer;
+
 }
 
 float getRadius(int a, int b, int theta) {
-     float s = sin_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
-     float c = cos_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+
+     float s = (float)sin_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+     float c = (float)cos_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+
      return (a * b) / (my_sqrt((a*a)*(s*s)+(b*b)*(c*c)));
 }
 
