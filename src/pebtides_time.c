@@ -80,7 +80,7 @@ float getRadius(int a, int b, int theta) {
      return (a * b) / (my_sqrt((a*a)*(s*s)+(b*b)*(c*c)));
 }
 
-GPathInfo get_gpath(int theta, GRect bounds, int hand){
+static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *info){
   // 90, bounds, 1
   int b = bounds.size.w / 2;
   int a = bounds.size.h / 2;
@@ -97,22 +97,10 @@ GPathInfo get_gpath(int theta, GRect bounds, int hand){
   int min = max + 5;
   APP_LOG(APP_LOG_LEVEL_DEBUG, "When angle is %d and the hand is %d the length is %d", theta, hand, max);
   
-  GPathInfo HAND = {
-   9,
-   (GPoint []) {
-     { 1, 7 },
-     { 4, 4 },
-     { 4, min },
-     { 1, max },
-     { -1, max },
-     { -4, min },
-     { -4, 4 },
-     { -1, 7 },
-     { 1, 7 }
-   }
-  };
-  
-  return HAND;
+  info->points[2].y = min;
+  info->points[3].y = max;
+  info->points[4].y = max;
+  info->points[5].y = min;
   
  }
 
@@ -340,13 +328,19 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   const int hand_stroke_width = 2;
   graphics_context_set_stroke_color(ctx, GColorBlack);
   graphics_context_set_stroke_width(ctx, hand_stroke_width);
+
+  int hour_angle = (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6);
+  int minute_angle = TRIG_MAX_ANGLE * t->tm_min / 60;
+
+  hand_update_radius(hour_angle, bounds, 2, &HOUR_HAND);
+  hand_update_radius(minute_angle, bounds, 1, &MINUTE_HAND);
   
   // Draw hour hand
-  gpath_rotate_to(s_hour_hand, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  gpath_rotate_to(s_hour_hand, hour_angle);
   gpath_draw_outline(ctx, s_hour_hand);
   
   // Draw minute hand
-  gpath_rotate_to(s_minute_hand, TRIG_MAX_ANGLE * t->tm_min / 60);
+  gpath_rotate_to(s_minute_hand, minute_angle);
   gpath_draw_outline(ctx, s_minute_hand);
   
   const int hand_fill_width = 6;
@@ -576,6 +570,7 @@ static void init(void) {
   // Create coordinate paths
   s_large_ticks = gpath_create(&LARGE_TICKS);
   s_small_ticks = gpath_create(&SMALL_TICKS);
+
   s_hour_hand = gpath_create(&HOUR_HAND);
   s_minute_hand = gpath_create(&MINUTE_HAND);
   /*
