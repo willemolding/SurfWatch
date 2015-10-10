@@ -86,7 +86,7 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
   int a = bounds.size.h / 2;
   
   
-  float value = (getRadius(a, b, theta));
+  float value = (getRadius(a, b, TRIGANGLE_TO_DEG(theta)));
   int max = (int)value;
   
   if(hand == 2){
