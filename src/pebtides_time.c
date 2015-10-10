@@ -75,28 +75,35 @@ float my_sqrt(const float num) {
 }
 
 float getRadius(int a, int b, int theta) {
-     double s = sin_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
-     double c = cos_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+     float s = sin_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+     float c = cos_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
      return (a * b) / (my_sqrt((a*a)*(s*s)+(b*b)*(c*c)));
 }
 
+
+
+
 static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *info){
   // 90, bounds, 1
-  int b = bounds.size.w / 2;
-  int a = bounds.size.h / 2;
+  theta = 45;
+  int b = bounds.size.w;
+  int a = bounds.size.h;
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "a = %d and b = %d", a, b);
   
   
-  float value = (getRadius(a, b, theta));
-  int max = (int)value;
-  
+  float value = (getRadius(a, b, theta)) / 2;
+  int max = value;
+
   if(hand == 2){
     max = max / 2;
   }
   
   max = (max * (-1)) - 8;
   int min = max + 5;
+
+
   APP_LOG(APP_LOG_LEVEL_DEBUG, "When angle is %d and the hand is %d the length is %d", theta, hand, max);
-  
+
   info->points[2].y = min;
   info->points[3].y = max;
   info->points[4].y = max;
