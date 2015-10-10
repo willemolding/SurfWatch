@@ -126,8 +126,15 @@ static void update_display_data() {
     //update the star string
     for(uint16_t i = 0; i < MAX_SURF_RATING; i++){
         if(i < surf_data.surf_rating){
-          star_string[2*i + 1] = 'b';
-          star_string[2*i + 2] = ' ';
+          if(i < surf_data.surf_rating - surf_data.wind_rating_penalty){
+            star_string[2*i + 1] = 'w';
+            star_string[2*i + 2] = ' ';
+          }
+          else{
+            star_string[2*i + 1] = 'o';
+            star_string[2*i + 2] = ' ';
+          }
+
         }
         else{
           star_string[2*i + 1] = '\0';
@@ -255,6 +262,9 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         break;
       case MAX_SURF_HEIGHT:
         surf_data.max_surf_height = tuple->value->uint16;
+        break;
+      case WIND_RATING_PENALTY:
+        surf_data.wind_rating_penalty = tuple->value->uint16;
         break;
 
     }

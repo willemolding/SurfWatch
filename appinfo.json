@@ -8,6 +8,7 @@
         "NAME": 0,
         "N_EVENTS": 2,
         "SURF_RATING": 13,
+        "WIND_RATING_PENALTY" : 16,
         "SWELL_DIRECTION": 11,
         "SWELL_STRENGTH": 10,
         "SWELL_UNITS": 12,

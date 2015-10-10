@@ -1,7 +1,7 @@
 var site_url = "http://pebtides-time-dev.herokuapp.com/";
 var msw_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
 var msw_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
-var spot_id = 115;
+var spot_id = 3;
 
 
 var lat = 0;
@@ -99,7 +99,8 @@ function send_surf_data_to_pebble(response){
                   'SWELL_UNITS' : response.swell.unit,
                   'SURF_RATING' : response.solidRating + response.fadedRating,
                   'MIN_SURF_HEIGHT' : response.swell.minBreakingHeight,
-                  'MAX_SURF_HEIGHT' : response.swell.maxBreakingHeight}
+                  'MAX_SURF_HEIGHT' : response.swell.maxBreakingHeight,
+                  'WIND_RATING_PENALTY' : response.fadedRating}
 
     console.log('pebble message is:');
     console.log(JSON.stringify(message));
