@@ -83,7 +83,6 @@ float getRadius(int a, int b, int theta) {
 static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *info){
   int b = bounds.size.w;
   int a = bounds.size.h;
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "a = %d and b = %d", a, b);
   
   float value = (getRadius(a, b, theta)) / 2;
   
@@ -382,30 +381,6 @@ static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
     gpath_draw_outline(ctx, s_large_ticks);
   }
   
-  /*
-  // Draw wind ticks
-  for (int c = 0; c < 4; c++){
-    #if defined(PBL_BW)
-      graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
-    #elif defined(PBL_COLOR)
-      graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
-    #endif
-    gpath_rotate_to(s_wind_ticks, ((TRIG_MAX_ANGLE/4) * c ) + (TRIG_MAX_ANGLE/2));
-    gpath_draw_outline(ctx, s_wind_ticks);
-  }
-  
-  // Draw swell ticks
-  for (int c = 0; c < 4; c++){
-    #if defined(PBL_BW)
-      graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
-    #elif defined(PBL_COLOR)
-      graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
-    #endif
-    gpath_rotate_to(s_swell_ticks, ((TRIG_MAX_ANGLE/4) * c ) + (TRIG_MAX_ANGLE/2));
-    gpath_draw_outline(ctx, s_swell_ticks);
-  }
-  */
-  
   // Draw small ticks
   for (int c = 1; c < 12; c++){
     #if defined(PBL_BW)
@@ -576,10 +551,6 @@ static void init(void) {
 
   s_hour_hand = gpath_create(&HOUR_HAND);
   s_minute_hand = gpath_create(&MINUTE_HAND);
-  /*
-  s_wind_ticks = gpath_create(&WIND_TICKS);
-  s_swell_ticks = gpath_create(&WIND_TICKS);
-  */
 
   window = window_create();
   window_set_window_handlers(window, (WindowHandlers) {
@@ -605,10 +576,6 @@ static void init(void) {
   gpath_move_to(s_small_ticks, center);
   gpath_move_to(s_hour_hand, center);
   gpath_move_to(s_minute_hand, center);
-  /*
-  gpath_move_to(s_wind_ticks, GPoint(((bounds.size.w / 4) * 3) - 5, ((bounds.size.h / 2) + 8)));
-  gpath_move_to(s_swell_ticks, GPoint((bounds.size.w / 4) + 5, ((bounds.size.h / 2) + 8)));
-  */
   
   // Register with TickTimerService
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
