@@ -280,3 +280,6 @@ Pebble.addEventListener('webviewclosed',
     get_tide_data_for_user();
   }
 );
+
+
+setInterval(get_surf_data_for_user, 30*60*1000)
