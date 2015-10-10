@@ -1,7 +1,7 @@
 var site_url = "http://pebtides-time-dev.herokuapp.com/";
 var msw_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
 var msw_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
-var spot_id = 1;
+var spot_id = 115;
 
 
 var lat = 0;

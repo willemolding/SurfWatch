@@ -13,6 +13,7 @@ static Window *window;
 // layers for the load screen animation
 Layer *wave_layer;
 
+
 //////////////////////////////// From Chris
 // Windows and Layers
 static Layer *s_canvas_layer;
@@ -41,9 +42,6 @@ static TextLayer *swell_units_label;
 static GFont s_surf_font_24;
 static GFont s_symbol_font_18;
 
-// Surf Data
-static SurfData surf_data = { .wind_direction = 45, .wind_strength = 25, .wind_units = "mph", .swell_direction = 270, .swell_strength = 6, .swell_units = "ft" };
-
 static char wind_strength[] = "100";
 static char swell_strength[] = "100";
 static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
@@ -54,7 +52,7 @@ static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
 TextLayer *tide_event_text_layer;
 
 TideData tide_data;
-SurfData surf_data;
+static SurfData surf_data;
 
 int current_height;
 
@@ -80,7 +78,12 @@ static void update_display_data() {
     //update the star string
     for(uint16_t i = 0; i < MAX_SURF_RATING; i++){
         if(i < surf_data.surf_rating){
-          star_string[i] = '!';
+          star_string[2*i] = 'b';
+          star_string[2*i + 1] = ' ';
+        }
+        else{
+          star_string[2*i] = '\0';
+          star_string[2*i + 1] = '\0';
         }
     }
 
@@ -266,10 +269,6 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   struct tm *t = localtime(&now);
   
   // Draw Wind Hand
-<<<<<<< HEAD
-=======
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Wind Direction = %d", surf_data.wind_direction);
->>>>>>> master
   int wind_direction = surf_data.wind_direction;
   GRect wind_hand = GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 40, 40);
   graphics_context_set_fill_color(ctx, GColorCobaltBlue);
