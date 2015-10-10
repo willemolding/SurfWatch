@@ -78,16 +78,16 @@ static void update_display_data() {
     //update the star string
     for(uint16_t i = 0; i < MAX_SURF_RATING; i++){
         if(i < surf_data.surf_rating){
-          star_string[2*i] = 'b';
-          star_string[2*i + 1] = ' ';
+          star_string[2*i + 1] = 'b';
+          star_string[2*i + 2] = ' ';
         }
         else{
-          star_string[2*i] = '\0';
           star_string[2*i + 1] = '\0';
+          star_string[2*i + 2] = '\0';
         }
     }
 
-    text_layer_set_text(surf_label, star_string);
+    text_layer_set_text(star_label, star_string);
     text_layer_set_text(tide_event_text_layer, height_text);
     layer_mark_dirty(window_get_root_layer(window));
   
@@ -398,11 +398,11 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(surf_label));
   
   // Create the star text layer
-  surf_label = text_layer_create(GRect(0, (bounds.size.h / 4) + 10, bounds.size.w, 50));
-  text_layer_set_text(surf_label, star_string);
-  text_layer_set_font(surf_label, s_symbol_font_18);
-  text_layer_set_text_alignment(surf_label, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(surf_label));
+  star_label = text_layer_create(GRect(0, (bounds.size.h / 4) + 10, bounds.size.w, 50));
+  text_layer_set_text(star_label, star_string);
+  text_layer_set_font(star_label, s_symbol_font_18);
+  text_layer_set_text_alignment(star_label, GTextAlignmentCenter);
+  layer_add_child(window_layer, text_layer_get_layer(star_label));
   
   // Create the wind text layer
   wind_label = text_layer_create(GRect(((bounds.size.w / 4) * 3) - 19, ((bounds.size.h / 2) - 8), 30, 15));
