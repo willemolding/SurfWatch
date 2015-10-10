@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAX_SURF_RATING 10
+
  typedef struct SurfData {
  	uint16_t wind_strength;
     uint16_t wind_direction;
