@@ -60,6 +60,62 @@ int current_height;
 static char height_text[10];
 static char error_message[50];
 
+float my_sqrt(const float num) {
+  const uint MAX_STEPS = 40;
+  const float MAX_ERROR = 0.001;
+  
+  float answer = num;
+  float ans_sqr = answer * answer;
+  uint step = 0;
+  while((ans_sqr - num > MAX_ERROR) && (step++ < MAX_STEPS)) {
+    answer = (answer + (num / answer)) / 2;
+    ans_sqr = answer * answer;
+  }
+  return answer;
+}
+
+float getRadius(int a, int b, int theta) {
+     double s = sin_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+     double c = cos_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+     return (a * b) / (my_sqrt((a*a)*(s*s)+(b*b)*(c*c)));
+}
+
+GPathInfo get_gpath(int theta, GRect bounds, int hand){
+  // 90, bounds, 1
+  int b = bounds.size.w / 2;
+  int a = bounds.size.h / 2;
+  
+  
+  float value = (getRadius(a, b, theta));
+  int max = (int)value;
+  
+  if(hand == 2){
+    max = max / 2;
+  }
+  
+  max = (max * (-1)) - 8;
+  int min = max + 5;
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "When angle is %d and the hand is %d the length is %d", theta, hand, max);
+  
+  GPathInfo HAND = {
+   9,
+   (GPoint []) {
+     { 1, 7 },
+     { 4, 4 },
+     { 4, min },
+     { 1, max },
+     { -1, max },
+     { -4, min },
+     { -4, 4 },
+     { -1, 7 },
+     { 1, 7 }
+   }
+  };
+  
+  return HAND;
+  
+ }
+
 
 int has_data = 0;
 
