@@ -41,11 +41,9 @@ static GFont s_surf_font_24;
 static GFont s_symbol_font_18;
 
 // Surf Data
-static SurfData surfData = { .wind_direction = 45, .wind_strength = 25, .wind_units = "mph", .swell_direction = 270, .swell_strength = 6, .swell_units = "ft" };
-
 static char wind_strength[] = "100";
 static char swell_strength[] = "100";
-
+static char surf_rating[] = "b b b b b b b b";
 ////////////////////////////////////////////
 
 // text layers to display the data
@@ -53,6 +51,9 @@ TextLayer *tide_event_text_layer;
 
 TideData tide_data;
 SurfData surf_data;
+  // = { .wind_direction = 45, .wind_strength = 25, .wind_units = "mph", .swell_direction = 270, .swell_strength = 6, .swell_units = "ft" };
+
+
 
 int current_height;
 
@@ -81,6 +82,16 @@ static void update_display_data() {
 
     text_layer_set_text(tide_event_text_layer, height_text);
     layer_mark_dirty(window_get_root_layer(window));
+  
+    text_layer_set_text(wind_units_label, surf_data.wind_units);
+    text_layer_set_text(swell_units_label, surf_data.swell_units);
+    
+    snprintf(wind_strength, sizeof(wind_strength), "%d", surf_data.wind_strength);
+    text_layer_set_text(wind_label, wind_strength);
+  
+    snprintf(swell_strength, sizeof(swell_strength), "%d", surf_data.swell_strength);
+    text_layer_set_text(swell_label, swell_strength);
+  
 }
 
 
@@ -256,13 +267,14 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   struct tm *t = localtime(&now);
   
   // Draw Wind Hand
-  int wind_direction = surfData.wind_direction;
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Wind Direction = %d", surf_data.wind_direction);
+  int wind_direction = surf_data.wind_direction;
   GRect wind_hand = GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 40, 40);
   graphics_context_set_fill_color(ctx, GColorCobaltBlue);
   graphics_fill_radial(ctx, wind_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(wind_direction - 15), DEG_TO_TRIGANGLE(wind_direction + 15));
   
   // Draw Swell Hand
-  int swell_direction = surfData.swell_direction;
+  int swell_direction = surf_data.swell_direction;
   GRect swell_hand = GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 40, 40);
   graphics_context_set_fill_color(ctx, GColorCobaltBlue);
   graphics_fill_radial(ctx, swell_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(swell_direction - 15), DEG_TO_TRIGANGLE(swell_direction + 15));
@@ -393,7 +405,7 @@ static void window_load(Window *window) {
   
   // Create the wind text layer
   wind_label = text_layer_create(GRect(((bounds.size.w / 4) * 3) - 19, ((bounds.size.h / 2) - 8), 30, 15));
-  snprintf(wind_strength, sizeof(wind_strength), "%d", surfData.wind_strength);
+  snprintf(wind_strength, sizeof(wind_strength), "%d", surf_data.wind_strength);
   text_layer_set_text(wind_label, wind_strength);
   text_layer_set_background_color(wind_label, GColorClear);
   text_layer_set_font(wind_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
@@ -402,7 +414,7 @@ static void window_load(Window *window) {
   
   // Create the wind units text layer
   wind_units_label = text_layer_create(GRect(((bounds.size.w / 4) * 3) - 19, ((bounds.size.h / 2) + 5), 30, 15));
-  text_layer_set_text(wind_units_label, surfData.wind_units);
+  text_layer_set_text(wind_units_label, surf_data.wind_units);
   text_layer_set_background_color(wind_units_label, GColorClear);
   text_layer_set_font(wind_units_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   text_layer_set_text_alignment(wind_units_label, GTextAlignmentCenter);
@@ -410,7 +422,7 @@ static void window_load(Window *window) {
   
   // Create the swell text layer
   swell_label = text_layer_create(GRect((bounds.size.w / 4) - 10, ((bounds.size.h / 2) - 7), 30, 15));
-  snprintf(swell_strength, sizeof(swell_strength), "%d", surfData.swell_strength);
+  snprintf(swell_strength, sizeof(swell_strength), "%d", surf_data.swell_strength);
   text_layer_set_text(swell_label, swell_strength);
   text_layer_set_background_color(swell_label, GColorClear);
   text_layer_set_font(swell_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
@@ -419,7 +431,7 @@ static void window_load(Window *window) {
   
   // Create the swell units text layer
   swell_units_label = text_layer_create(GRect((bounds.size.w / 4) - 10, ((bounds.size.h / 2) + 5), 30, 15));
-  text_layer_set_text(swell_units_label, surfData.swell_units);
+  text_layer_set_text(swell_units_label, surf_data.swell_units);
   text_layer_set_background_color(swell_units_label, GColorClear);
   text_layer_set_font(swell_units_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   text_layer_set_text_alignment(swell_units_label, GTextAlignmentCenter);
