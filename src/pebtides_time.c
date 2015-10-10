@@ -92,8 +92,10 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
   APP_LOG(APP_LOG_LEVEL_DEBUG, "a = %d and b = %d", a, b);
   
   
-  float value = (getRadius(a, b, theta)) / 2;
-  int max = (int)value - 8;
+
+  float value = (getRadius(a, b, TRIGANGLE_TO_DEG(theta)));
+  int max = (int)value;
+  
   if(hand == 2){
     max = max / 2;
   }
