@@ -97,7 +97,7 @@ function send_surf_data_to_pebble(response){
                   'SWELL_STRENGTH' : Math.round(response.swell.components.combined.height),
                   'SWELL_DIRECTION': Math.round(response.swell.components.combined.direction),
                   'SWELL_UNITS' : response.swell.unit,
-                  'SURF_RATING' : response.fadedRating,
+                  'SURF_RATING' : response.solidRating + response.fadedRating,
                   'MIN_SURF_HEIGHT' : response.swell.minBreakingHeight,
                   'MAX_SURF_HEIGHT' : response.swell.maxBreakingHeight}
 
