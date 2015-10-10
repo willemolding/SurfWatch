@@ -18,7 +18,7 @@ static const GPathInfo SMALL_TICKS = {
   }
 };
 
-static const GPathInfo HOUR_HAND = {
+static GPathInfo HOUR_HAND = {
  9,
  (GPoint []) {
    { 1, 7 },
@@ -34,7 +34,7 @@ static const GPathInfo HOUR_HAND = {
 };
 
 // Minute hand outline coordinate path
-static const GPathInfo MINUTE_HAND = {
+static GPathInfo MINUTE_HAND = {
  9,
  (GPoint []) {
    { 1, 7 },
