@@ -1,0 +1,9 @@
+
+# Ignore build generated files
+build/
+screenshots/
+blog_post/
+tideline_graphics/
+
+# Ignore waf lock file
+.lock-waf*
