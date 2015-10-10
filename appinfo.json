@@ -27,6 +27,11 @@
     "resources": {
         "media": [
             {
+                "file": "fonts/symbol",
+                "name": "FONT_SYMBOL_18",
+                "type": "font"
+            },
+            {
                 "file": "images/warning.png",
                 "name": "WARNING",
                 "type": "png"
@@ -36,11 +41,6 @@
                 "menuIcon": true,
                 "name": "IMAGE_MENU_ICON",
                 "type": "png"
-            },
-            {
-                "file": "fonts/symbol",
-                "name": "FONT_SYMBOL_18",
-                "type": "font"
             },
             {
                 "file": "fonts/gotham",
