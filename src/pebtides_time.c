@@ -54,6 +54,7 @@ static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
 TextLayer *tide_event_text_layer;
 
 TideData tide_data;
+SurfData surf_data;
 
 int current_height;
 
@@ -61,10 +62,6 @@ int current_height;
 static char height_text[10];
 static char error_message[50];
 
-// other random global vars
-int level_height = SCREEN_HEIGHT / 2; // how many pixels above the bottom to draw the blue layer
-int min_height = 10000;
-int max_height = 0;
 int has_data = 0;
 
 static void update_display_data() {
@@ -90,6 +87,16 @@ static void update_display_data() {
     text_layer_set_text(surf_label, star_string);
     text_layer_set_text(tide_event_text_layer, height_text);
     layer_mark_dirty(window_get_root_layer(window));
+  
+    text_layer_set_text(wind_units_label, surf_data.wind_units);
+    text_layer_set_text(swell_units_label, surf_data.swell_units);
+    
+    snprintf(wind_strength, sizeof(wind_strength), "%d", surf_data.wind_strength);
+    text_layer_set_text(wind_label, wind_strength);
+  
+    snprintf(swell_strength, sizeof(swell_strength), "%d", surf_data.swell_strength);
+    text_layer_set_text(swell_label, swell_strength);
+  
 }
 
 
@@ -134,10 +141,6 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
   Tuple *tuple = dict_read_first(iterator);
   bool is_error = false;
-
-  if(has_data == 1){ //don't bother if there is already valid data cached on the watch
-    return;
-  }
 
   //read in the data from the message using the dictionary iterator
   while (tuple) 
@@ -204,19 +207,15 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
   if(is_error == false) {
 
-  	min_height = find_min(tide_data.heights.values, tide_data.n_events);
-  	max_height = find_max(tide_data.heights.values, tide_data.n_events);    
-
     has_data = 1;
     store_tide_data(&tide_data);
-
-    update_display_data();
   }
   else { // push an error message window to the stack
       push_error(error_message);
   }
 
   update_display_data();
+
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
@@ -267,6 +266,10 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   struct tm *t = localtime(&now);
   
   // Draw Wind Hand
+<<<<<<< HEAD
+=======
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Wind Direction = %d", surf_data.wind_direction);
+>>>>>>> master
   int wind_direction = surf_data.wind_direction;
   GRect wind_hand = GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 40, 40);
   graphics_context_set_fill_color(ctx, GColorCobaltBlue);
@@ -465,9 +468,6 @@ static void window_load(Window *window) {
     current_height = get_tide_at_time(&tide_data, t);
     if(current_height != -1){
       APP_LOG(APP_LOG_LEVEL_DEBUG, "Valid cached data found.");
-
-      min_height = find_min(tide_data.heights.values, tide_data.n_events);
-      max_height = find_max(tide_data.heights.values, tide_data.n_events);    
 
       has_data = 1;
 
