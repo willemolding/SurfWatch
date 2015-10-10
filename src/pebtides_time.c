@@ -45,6 +45,7 @@ static GFont s_symbol_font_18;
 static char wind_strength[] = "100";
 static char swell_strength[] = "100";
 static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
+static char wave_height_string[20];
 
 ////////////////////////////////////////////
 
@@ -133,6 +134,12 @@ static void update_display_data() {
           star_string[2*i + 2] = '\0';
         }
     }
+
+    //update the height string
+    snprintf(wave_height_string, sizeof(wave_height_string), "%d-%d ", 
+      surf_data.min_surf_height, surf_data.max_surf_height);
+
+    strcat(wave_height_string, surf_data.swell_units);
 
     text_layer_set_text(star_label, star_string);
     text_layer_set_text(tide_event_text_layer, height_text);
@@ -420,7 +427,7 @@ static void window_load(Window *window) {
   
   // Create the surf text layer
   surf_label = text_layer_create(GRect((bounds.size.w / 4), (bounds.size.h / 4) - 15, (bounds.size.w / 2), 30));
-  text_layer_set_text(surf_label, "5-8 ft");
+  text_layer_set_text(surf_label, wave_height_string);
   text_layer_set_text_color(surf_label, GColorDarkCandyAppleRed);
   text_layer_set_font(surf_label, s_surf_font_24);
   text_layer_set_text_alignment(surf_label, GTextAlignmentCenter);
