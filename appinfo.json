@@ -51,7 +51,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "Tideface",
+    "shortName": "SurfWatch",
     "targetPlatforms": [
         "basalt",
         "chalk"
