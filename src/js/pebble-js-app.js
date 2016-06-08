@@ -5,20 +5,20 @@ const msw_forecast_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
 const msw_tide_url = "http://magicseaweed.com/api/"+msw_key+"/tide/";
 
 const locationOptions = {
-  enableHighAccuracy: true,
-  maximumAge: 10000,
-  timeout: 10000
+	enableHighAccuracy: true,
+	maximumAge: 10000,
+	timeout: 10000
 };
 
 
 function send_pebble_message(message) {
-  Pebble.sendAppMessage(message,
-	  function(e) {
+	Pebble.sendAppMessage(message,
+		function(e) {
 		console.log('Send successful.');
-	  },
-	  function(e) {
+		},
+		function(e) {
 		console.log('Send failed!');
-	  }
+		}
 	);
 }
 
@@ -27,96 +27,92 @@ function send_pebble_message(message) {
 function getInt32Bytes( x ) {
 	var bytes = [];
 	for (var i = 0; i < 4; i++){
-	  bytes[i] = x & (255);
-	  x = x>>8;
+		bytes[i] = x & (255);
+		x = x>>8;
 	}
 	return bytes;
 }
 
 
+var message = {}
 
+function add_forecast_data_to_message(forecast_response){
+	message['WIND_STRENGTH'] = Math.round(response.wind.speed);
+	message['WIND_DIRECTION'] = Math.round(response.wind.direction);
+	message['WIND_UNITS'] = response.wind.unit;
+	message['SWELL_HEIGHT'] = Math.round(response.swell.components.combined.height);
+	message['SWELL_DIRECTION']= Math.round(response.swell.components.combined.direction);
+	message['SWELL_UNITS'] = response.swell.unit;
+	message['SOLID_RATING'] = response.solidRating;
+	message['FADED_RATING'] = response.fadedRating;
+	message['MIN_SURF_HEIGHT'] = response.swell.minBreakingHeight;
+	message['MAX_SURF_HEIGHT'] = response.swell.maxBreakingHeight;
+}
 
-function send_data_to_pebble(response){
-
-	console.log('data from server:');
-	console.log(JSON.stringify(response));
-
-	var message = {'WIND_STRENGTH' : Math.round(response.wind.speed),
-				  'WIND_DIRECTION' : Math.round(response.wind.direction),
-				  'WIND_UNITS' : response.wind.unit,
-				  'SWELL_STRENGTH' : Math.round(response.swell.components.combined.height),
-				  'SWELL_DIRECTION': Math.round(response.swell.components.combined.direction),
-				  'SWELL_UNITS' : response.swell.unit,
-				  'SURF_RATING' : response.solidRating + response.fadedRating,
-				  'MIN_SURF_HEIGHT' : response.swell.minBreakingHeight,
-				  'MAX_SURF_HEIGHT' : response.swell.maxBreakingHeight,
-				  'WIND_RATING_PENALTY' : response.fadedRating}
-
-	console.log('pebble message is:');
-	console.log(JSON.stringify(message));
-
-	send_pebble_message(message);
+function add_tide_data_to_message(tide_response) {
+	
 }
 
 
+function make_request(url, success_callback) {
+	var request = new XMLHttpRequest();
+	request.open('GET', url, true);
 
-
-function send_error_message_to_pebble(error_string){
-	var message = { 'ERROR_MSG' : error_string};
-
-	console.log('pebble message is:');
-	console.log(JSON.stringify(message));
-
-	send_pebble_message(message);
+	request.onload = function() {
+		if (request.status >= 200 && request.status < 400) {
+			// Success!
+			console.log('Data recieved from server successfully.');
+			success_callback(request);
+		}
+		else if(request.status == 503){
+			console.log('Unknown server error');
+		}
+		else if(request.status == 500) {
+			console.log('Unknown server error');
+		}
+		else {
+			console.log('Unknown server error');
+		}
+	};
+	request.onerror = function() {
+		// There was a connection error of some sort
+		console.log('Could not reach server.');
+	};
+	request.send();
 }
-
 
 
 
 function date_update_event(){
 
-  console.log('Loading surf data...');
+	console.log('Loading surf data...');
 
-  //retrieve the stored spot_id
-  var spot_id = localStorage.getItem('spot_id');
+	//retrieve the stored spot_id
+	var spot_id = localStorage.getItem('spot_id');
 
-  if(!spot_id) {
-  	Pebble.showSimpleNotificationOnPebble("Please Open Config", 
-  		"You have not yet selected a location. Please open the configuration page");
-  }
-  else{
-  	var request = new XMLHttpRequest();
-	  request.open('GET', msw_url+'?spot_id='+spot_id, true);
+	if(!spot_id) {
+		Pebble.showSimpleNotificationOnPebble("Please Open Config", 
+			"You have not yet selected a location. Please open the configuration page.");
+	}
+	else {
 
-	  request.onload = function() {
-		  if (request.status >= 200 && request.status < 400) {
-			// Success!
-			console.log('Data recieved from server successfully.');
+		//make the forecase request
+		make_request(msw_forecast_url+'?spot_id='+spot_id, 
+			function(request) {
 			var data = JSON.parse(request.responseText);
-			send_data_to_pebble(data[0]);
-		  }
-		  else if(request.status == 503){
-			console.log('Unknown server error');
-			send_error_message_to_pebble("Server Unavailable");
-		  }
-		  else if(request.status == 500) {
-			console.log('Unknown server error');
-			send_error_message_to_pebble("Server Unavailable");
-		  }
-		  else {
-			console.log('Unknown server error');
-			send_error_message_to_pebble("Server Unavailable");
-		  }
-		};
-		request.onerror = function() {
-		  // There was a connection error of some sort
-		  console.log('Could not reach server.');
-		  //send error message
-		  send_error_message_to_pebble("Server Unavailable")
-		};
+			add_forecast_data_to_message(data[0]);
+		});
 
-		request.send();
-  	}
+		//make the tide request
+		make_request(msw_tide_url+'?spot_id='+spot_id, 
+			function(request) {
+			var data = JSON.parse(request.responseText);
+			add_tide_data_to_message(data[0]);
+		});
+
+		//whatever we receive to the watch
+		send_pebble_message(message);
+	}
 
 }
 
@@ -124,7 +120,7 @@ function date_update_event(){
 
 Pebble.addEventListener("ready", function(e) {
 	get_surf_data_for_user();
-	setInterval(get_surf_data_for_user, 30*60*1000) //update every 30 minutes
+	setInterval(get_surf_data_for_user, 30*60*1000); //update every 30 minutes
 });
 
 
@@ -133,8 +129,8 @@ Pebble.addEventListener('showConfiguration', function(e) {
 
 	// set up the location callbacks
 	function success(pos) {
-  		var url = config_page_url+'?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude;
-  		Pebble.openURL(url);
+		var url = config_page_url+'?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude;
+		Pebble.openURL(url);
 	}
 
 	function error(err) {
@@ -148,8 +144,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
 });
 
 
-Pebble.addEventListener('webviewclosed',
-  function(e) {
+Pebble.addEventListener('webviewclosed', function(e) {
 
 	var configData = JSON.parse(decodeURIComponent(e.response));
 
@@ -159,9 +154,6 @@ Pebble.addEventListener('webviewclosed',
 		//trigger an update
 		date_update_event();
 	}
-
-
-  }
-);
+});
 
 
