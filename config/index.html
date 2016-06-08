@@ -11,7 +11,10 @@
 
 	<script type="text/javascript">
 
-		var url = 'http://magicseaweed.com/api/4fa1b1a1cb45e3ade0ee1fe7560ff2ee/spot?access_token=false&fields=_id,name';
+		var msw_key = "4fa1b1a1cb45e3ade0ee1fe7560ff2ee";
+		var msw_spot_locator_url = "http://magicseaweed.com/api/"+msw_key+"/spot?fields=_id,name";
+
+
 
 		// Get query variables
 		function getQueryParam(variable, defaultValue) {
@@ -20,7 +23,6 @@
 		  var vars = query.split('&');
 		  for (var i = 0; i < vars.length; i++) {
 		    var pair = vars[i].split('=');
-
 		    // If the query variable parameter is found, decode it to use and return it for use
 		    if (pair[0] === variable) {
 		      return decodeURIComponent(pair[1]);
@@ -30,6 +32,8 @@
 		}
 
 		
+
+
 		$( document ).ready(function() {
 
 			var lat = getQueryParam('lat', 157.7964);
@@ -59,7 +63,7 @@
 			  },
 
 			  error:function(){
-
+			  		console.log("Error requesting nearby sites")
 			  }
 			});
 			});
@@ -68,7 +72,6 @@
 		function acceptButtonClick(){
 			var site_id = $("input[name='radio-1']:checked").val();
 			alert("buton clicked: "+site_id);
-
 			var return_to = getQueryParam('return_to', 'pebblejs://close#');
 			document.location = return_to + site_id;
 		}

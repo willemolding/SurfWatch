@@ -1,123 +1,70 @@
-var site_url = "http://pebtides-time-dev.herokuapp.com/";
-var msw_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
-var msw_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
-var spot_id = 3;
+var config_page_url = ""
 
+var msw_key = "4fa1b1a1cb45e3ade0ee1fe7560ff2ee";
+var msw_forecast_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
+var msw_tide_url = "http://magicseaweed.com/api/"+msw_key+"/tide/";
 
-var lat = 0;
-var lon = 0;
-var token = 'not_set';
-var timeline = 0;
-var current_watch;
 
 var locationOptions = {
-  enableHighAccuracy: false, 
-  maximumAge: 0, 
-  timeout: 1000
+  enableHighAccuracy: true,
+  maximumAge: 10000,
+  timeout: 10000
 };
 
 
 function send_pebble_message(message) {
   Pebble.sendAppMessage(message,
-      function(e) {
-        console.log('Send successful.');
-      },
-      function(e) {
-        console.log('Send failed!');
-      }
-    );
+	  function(e) {
+		console.log('Send successful.');
+	  },
+	  function(e) {
+		console.log('Send failed!');
+	  }
+	);
 }
 
 function getInt32Bytes( x ) {
-    var bytes = [];
-    for (var i = 0; i < 4; i++){
-      bytes[i] = x & (255);
-      x = x>>8;
-    }
-    return bytes;
+	var bytes = [];
+	for (var i = 0; i < 4; i++){
+	  bytes[i] = x & (255);
+	  x = x>>8;
+	}
+	return bytes;
 }
 
 
-function send_tide_data_to_pebble(response){
+function send_data_to_pebble(response){
 
-    console.log('data from server:');
-    console.log(JSON.stringify(response));
+	console.log('data from server:');
+	console.log(JSON.stringify(response));
 
-    var times = [];
-    var heights = [];
-    var events = [];
-    var unit = '';
-    for (var tide_event_index in response.tide_data){
-      //process the tide data into data
-      var tide_event = response.tide_data[tide_event_index];
-      console.log(JSON.stringify(tide_event));
+	var message = {'WIND_STRENGTH' : Math.round(response.wind.speed),
+				  'WIND_DIRECTION' : Math.round(response.wind.direction),
+				  'WIND_UNITS' : response.wind.unit,
+				  'SWELL_STRENGTH' : Math.round(response.swell.components.combined.height),
+				  'SWELL_DIRECTION': Math.round(response.swell.components.combined.direction),
+				  'SWELL_UNITS' : response.swell.unit,
+				  'SURF_RATING' : response.solidRating + response.fadedRating,
+				  'MIN_SURF_HEIGHT' : response.swell.minBreakingHeight,
+				  'MAX_SURF_HEIGHT' : response.swell.maxBreakingHeight,
+				  'WIND_RATING_PENALTY' : response.fadedRating}
 
-      //send the local time if the watch is running APLITE as currently this has no timzone correction
-      if(current_watch.platform == 'aplite') {
-            times = times.concat(getInt32Bytes(tide_event.local_time));
-      }
-      else {  //send the UTC time if running BASALT as this has the ability to adjust timezones
-            times = times.concat(getInt32Bytes(tide_event.time));
-      }
+	console.log('pebble message is:');
+	console.log(JSON.stringify(message));
 
-
-      heights = heights.concat(getInt32Bytes(tide_event.height * 100));
-
-      unit = tide_event.unit;
-      if(tide_event.event == 'High Tide'){
-        events.push(1);
-      }
-      else{
-        events.push(0);
-      }
-    }
-
-    var message = { 'NAME' : response.name,
-                    'UNIT' : unit,
-                    'N_EVENTS' : response.tide_data.length,
-                    'TIMES' : times,
-                    'HEIGHTS' : heights,
-                    'EVENTS' : events};
-
-    console.log('pebble message is:');
-    console.log(JSON.stringify(message));
-
-    send_pebble_message(message);
-
-}
-
-function send_surf_data_to_pebble(response){
-
-    console.log('data from server:');
-    console.log(JSON.stringify(response));
-
-    var message = {'WIND_STRENGTH' : Math.round(response.wind.speed),
-                  'WIND_DIRECTION' : Math.round(response.wind.direction),
-                  'WIND_UNITS' : response.wind.unit,
-                  'SWELL_STRENGTH' : Math.round(response.swell.components.combined.height),
-                  'SWELL_DIRECTION': Math.round(response.swell.components.combined.direction),
-                  'SWELL_UNITS' : response.swell.unit,
-                  'SURF_RATING' : response.solidRating + response.fadedRating,
-                  'MIN_SURF_HEIGHT' : response.swell.minBreakingHeight,
-                  'MAX_SURF_HEIGHT' : response.swell.maxBreakingHeight,
-                  'WIND_RATING_PENALTY' : response.fadedRating}
-
-    console.log('pebble message is:');
-    console.log(JSON.stringify(message));
-
-    send_pebble_message(message);
+	send_pebble_message(message);
 }
 
 function send_error_message_to_pebble(error_string){
-    var message = { 'ERROR_MSG' : error_string};
+	var message = { 'ERROR_MSG' : error_string};
 
-    console.log('pebble message is:');
-    console.log(JSON.stringify(message));
+	console.log('pebble message is:');
+	console.log(JSON.stringify(message));
 
-    send_pebble_message(message);
+	send_pebble_message(message);
 }
 
-function get_surf_data_for_user(){
+function get_new_data(){
 
   console.log('Loading surf data...');
 
@@ -125,131 +72,44 @@ function get_surf_data_for_user(){
   request.open('GET', msw_url+'?spot_id='+spot_id, true);
 
   request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        // Success!
-        console.log('Data recieved from server successfully.');
-        var surf_data = JSON.parse(request.responseText);
-        send_surf_data_to_pebble(surf_data[0]);
-      }
-      else if(request.status == 503){
-        console.log('Unknown server error');
-        send_error_message_to_pebble("Server Unavailable");
-      }
-      else if(request.status == 500) {
-        console.log('Unknown server error');
-        send_error_message_to_pebble("Server Unavailable");
-      }
-      else {
-        console.log('Unknown server error');
-        send_error_message_to_pebble("Server Unavailable");
-      }
-    };
-    request.onerror = function() {
-      // There was a connection error of some sort
-      console.log('Could not reach server.');
-      //send error message
-      send_error_message_to_pebble("Server Unavailable")
-    };
-    request.send();
+	  if (request.status >= 200 && request.status < 400) {
+		// Success!
+		console.log('Data recieved from server successfully.');
+		var surf_data = JSON.parse(request.responseText);
+		send_data_to_pebble(surf_data[0]);
+	  }
+	  else if(request.status == 503){
+		console.log('Unknown server error');
+		send_error_message_to_pebble("Server Unavailable");
+	  }
+	  else if(request.status == 500) {
+		console.log('Unknown server error');
+		send_error_message_to_pebble("Server Unavailable");
+	  }
+	  else {
+		console.log('Unknown server error');
+		send_error_message_to_pebble("Server Unavailable");
+	  }
+	};
 
+	request.onerror = function() {
+	  // There was a connection error of some sort
+	  console.log('Could not reach server.');
+	  //send error message
+	  send_error_message_to_pebble("Server Unavailable")
+	};
+
+	request.send();
 }
 
-function get_tide_data_for_user(){
 
-    console.log('My token is ' + token);
-
-    var request = new XMLHttpRequest();
-
-    console.log('sending request to: ' + site_url+'users?token='+token);
-    request.open('GET', site_url+'users?token='+token, true);
-
-    request.onload = function() {
-      if (request.status >= 200 && request.status < 400) {
-        // Success!
-        console.log('Data recieved from server successfully.');
-        var tide_data = JSON.parse(request.responseText);
-        send_tide_data_to_pebble(tide_data);
-      }
-      else if(request.status == 503){
-        // there are no dynos running to respond
-        console.log('Server is not running');
-        send_error_message_to_pebble("Server Unavailable");
-      }
-      else if(request.status == 500) {
-        console.log('No user with this token');
-        send_error_message_to_pebble("Please open app configuration");
-      }
-      else {
-        console.log('Unknown server error');
-        send_error_message_to_pebble("Server Unavailable");
-      }
-    };
-    request.onerror = function() {
-      // There was a connection error of some sort
-      console.log('Could not reach server.');
-      //send error message
-      send_error_message_to_pebble("Server Unavailable")
-    };
-    request.send();
-}
 
 Pebble.addEventListener("ready",
   
-    function(e) {
-
-        //determine the current watch info. This is a hack until pebble fixes the bug.
-        if(Pebble.getActiveWatchInfo) {
-          try {
-            current_watch = Pebble.getActiveWatchInfo();
-          } catch(err) {
-            current_watch = {
-              platform: "basalt",
-            };
-          }
-        } else {
-          current_watch = {
-            platform: "aplite",
-          };
-        }
-
-        console.log("running on " + current_watch.platform);
-        console.log("About to get surf data");
-
-        get_surf_data_for_user();
-
-
-        //request current position
-        navigator.geolocation.getCurrentPosition(function (pos){
-          lat = pos.coords.latitude;
-          lon = pos.coords.longitude;
-        }, function (err){
-            console.log('location error (' + err.code + '): ' + err.message);
-        }, locationOptions);
-
-
-        if(Pebble.getTimelineToken){
-            // if the timeline token is available e.g. using a Pebble Time watch
-            Pebble.getTimelineToken(
-                function (timeline_token) {
-                    console.log('Timeline token obtained.');
-                    token = timeline_token;
-                    timeline = 1;
-                    get_tide_data_for_user();
-                },
-                function (error) { 
-                    console.log('Error getting timeline token: ' + error);
-                    token = Pebble.getAccountToken();
-                    get_tide_data_for_user();
-                }
-            );
-        }
-        else{
-            console.log('Timeline token is not available for this watch');
-            token = Pebble.getAccountToken();
-            get_tide_data_for_user();
-        }
-
-    }
+	function(e) {
+		get_surf_data_for_user();
+		setInterval(get_surf_data_for_user, 30*60*1000) //update every 30 minutes
+	}
 
 
 );
@@ -258,29 +118,28 @@ Pebble.addEventListener("ready",
 
 Pebble.addEventListener('showConfiguration', function(e) {
 
-        console.log('showing configuration page.');
+	// set up the location callbacks
+	function success(pos) {
+  		var url = config_page_url+'?lat='+pos.coords.latitude+'&lon='+pos.coords.longitude;
+  		Pebble.openURL(url);
+	}
 
-        var url;
+	function error(err) {
+		var url = config_page_url+'?token='+token+'&timeline='+timeline;
+		Pebble.openURL(url);
+	}
 
-        if(lat !== 0 && lon !== 0) {
-          url = site_url+'configure?token='+token+'&timeline='+timeline+'&lat='+lat+'&lon='+lon;
-        }
-        else {
-          url = site_url+'configure?token='+token+'&timeline='+timeline;
-        }
-
-        console.log(url);
-        Pebble.openURL(url);
-        
+	//request lat,lon from location service
+	navigator.geolocation.getCurrentPosition(success, error, locationOptions);
+		
 });
 
 
 Pebble.addEventListener('webviewclosed',
   function(e) {
-    console.log('Configuration window returned: ' + e.response);
-    get_tide_data_for_user();
+	console.log('Configuration window returned: ' + e.response);
+	get_tide_data_for_user();
   }
 );
 
 
-setInterval(get_surf_data_for_user, 30*60*1000)
