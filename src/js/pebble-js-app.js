@@ -36,21 +36,32 @@ function getInt32Bytes( x ) {
 
 var message = {}
 
-function add_forecast_data_to_message(forecast_response){
+function add_forecast_data_to_message(response){
+	message['SOLID_RATING'] = response.solidRating;
+	message['FADED_RATING'] = response.fadedRating;
+
+	message['SWELL_DIRECTION'] = Math.round(response.swell.components.combined.direction);
+	message['SWELL_HEIGHT'] = Math.round(response.swell.components.combined.height);
+	message['SWELL_UNITS'] = response.swell.unit;
+
 	message['WIND_STRENGTH'] = Math.round(response.wind.speed);
 	message['WIND_DIRECTION'] = Math.round(response.wind.direction);
 	message['WIND_UNITS'] = response.wind.unit;
-	message['SWELL_HEIGHT'] = Math.round(response.swell.components.combined.height);
-	message['SWELL_DIRECTION']= Math.round(response.swell.components.combined.direction);
-	message['SWELL_UNITS'] = response.swell.unit;
-	message['SOLID_RATING'] = response.solidRating;
-	message['FADED_RATING'] = response.fadedRating;
+
 	message['MIN_SURF_HEIGHT'] = response.swell.minBreakingHeight;
 	message['MAX_SURF_HEIGHT'] = response.swell.maxBreakingHeight;
 }
 
-function add_tide_data_to_message(tide_response) {
-	
+function add_tide_data_to_message(response) {
+  message['TIDE_UNITS'] = response.unit
+
+  message['TIDE_1_TIME'] = response.tide[0].timestamp
+  message['TIDE_1_HEIGHT'] = response.tide[0].shift
+  message['TIDE_1_STATE'] = response.tide[0].state
+
+  message['TIDE_2_TIME'] = response.tide[1].timestamp
+  message['TIDE_2_HEIGHT'] = response.tide[1].shift
+  message['TIDE_2_STATE'] =response.tide[1].state
 }
 
 
