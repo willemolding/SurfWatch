@@ -1,4 +1,4 @@
-const config_page_url = ""
+const config_page_url = "http://localhost:8000/"
 
 const msw_key = "4fa1b1a1cb45e3ade0ee1fe7560ff2ee";
 const msw_forecast_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
@@ -83,7 +83,7 @@ function make_request(url, success_callback) {
 
 
 
-function date_update_event(){
+function data_update_event(){
 
 	console.log('Loading surf data...');
 
@@ -117,10 +117,9 @@ function date_update_event(){
 }
 
 
-
 Pebble.addEventListener("ready", function(e) {
-	get_surf_data_for_user();
-	setInterval(get_surf_data_for_user, 30*60*1000); //update every 30 minutes
+	data_update_event();
+	setInterval(data_update_event, 30*60*1000); //update every 30 minutes
 });
 
 

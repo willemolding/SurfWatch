@@ -40,7 +40,7 @@
 			var lon = getQueryParam('lon', 21.3114);
 
 			$.ajax({
-			  url: url+"&lat="+lat+"&lon="+lon,
+			  url: msw_spot_locator_url+"&lat="+lat+"&lon="+lon,
 			  dataType:'jsonp',
 			  crossDomain: true,
 			  success:function(data){
@@ -71,7 +71,7 @@
 
 		function acceptButtonClick(){
 			var site_id = $("input[name='radio-1']:checked").val();
-			alert("buton clicked: "+site_id);
+			alert("Selected site_id: "+site_id);
 			var return_to = getQueryParam('return_to', 'pebblejs://close#');
 			document.location = return_to + site_id;
 		}
