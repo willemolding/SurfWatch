@@ -1,11 +1,10 @@
-var config_page_url = ""
+const config_page_url = ""
 
-var msw_key = "4fa1b1a1cb45e3ade0ee1fe7560ff2ee";
-var msw_forecast_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
-var msw_tide_url = "http://magicseaweed.com/api/"+msw_key+"/tide/";
+const msw_key = "4fa1b1a1cb45e3ade0ee1fe7560ff2ee";
+const msw_forecast_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
+const msw_tide_url = "http://magicseaweed.com/api/"+msw_key+"/tide/";
 
-
-var locationOptions = {
+const locationOptions = {
   enableHighAccuracy: true,
   maximumAge: 10000,
   timeout: 10000
@@ -23,6 +22,8 @@ function send_pebble_message(message) {
 	);
 }
 
+
+
 function getInt32Bytes( x ) {
 	var bytes = [];
 	for (var i = 0; i < 4; i++){
@@ -31,6 +32,8 @@ function getInt32Bytes( x ) {
 	}
 	return bytes;
 }
+
+
 
 
 function send_data_to_pebble(response){
@@ -55,6 +58,9 @@ function send_data_to_pebble(response){
 	send_pebble_message(message);
 }
 
+
+
+
 function send_error_message_to_pebble(error_string){
 	var message = { 'ERROR_MSG' : error_string};
 
@@ -64,55 +70,62 @@ function send_error_message_to_pebble(error_string){
 	send_pebble_message(message);
 }
 
-function get_new_data(){
+
+
+
+function date_update_event(){
 
   console.log('Loading surf data...');
 
-  var request = new XMLHttpRequest();
-  request.open('GET', msw_url+'?spot_id='+spot_id, true);
+  //retrieve the stored spot_id
+  var spot_id = localStorage.getItem('spot_id');
 
-  request.onload = function() {
-	  if (request.status >= 200 && request.status < 400) {
-		// Success!
-		console.log('Data recieved from server successfully.');
-		var surf_data = JSON.parse(request.responseText);
-		send_data_to_pebble(surf_data[0]);
-	  }
-	  else if(request.status == 503){
-		console.log('Unknown server error');
-		send_error_message_to_pebble("Server Unavailable");
-	  }
-	  else if(request.status == 500) {
-		console.log('Unknown server error');
-		send_error_message_to_pebble("Server Unavailable");
-	  }
-	  else {
-		console.log('Unknown server error');
-		send_error_message_to_pebble("Server Unavailable");
-	  }
-	};
+  if(!spot_id) {
+  	Pebble.showSimpleNotificationOnPebble("Please Open Config", 
+  		"You have not yet selected a location. Please open the configuration page");
+  }
+  else{
+  	var request = new XMLHttpRequest();
+	  request.open('GET', msw_url+'?spot_id='+spot_id, true);
 
-	request.onerror = function() {
-	  // There was a connection error of some sort
-	  console.log('Could not reach server.');
-	  //send error message
-	  send_error_message_to_pebble("Server Unavailable")
-	};
+	  request.onload = function() {
+		  if (request.status >= 200 && request.status < 400) {
+			// Success!
+			console.log('Data recieved from server successfully.');
+			var data = JSON.parse(request.responseText);
+			send_data_to_pebble(data[0]);
+		  }
+		  else if(request.status == 503){
+			console.log('Unknown server error');
+			send_error_message_to_pebble("Server Unavailable");
+		  }
+		  else if(request.status == 500) {
+			console.log('Unknown server error');
+			send_error_message_to_pebble("Server Unavailable");
+		  }
+		  else {
+			console.log('Unknown server error');
+			send_error_message_to_pebble("Server Unavailable");
+		  }
+		};
+		request.onerror = function() {
+		  // There was a connection error of some sort
+		  console.log('Could not reach server.');
+		  //send error message
+		  send_error_message_to_pebble("Server Unavailable")
+		};
 
-	request.send();
+		request.send();
+  	}
+
 }
 
 
 
-Pebble.addEventListener("ready",
-  
-	function(e) {
-		get_surf_data_for_user();
-		setInterval(get_surf_data_for_user, 30*60*1000) //update every 30 minutes
-	}
-
-
-);
+Pebble.addEventListener("ready", function(e) {
+	get_surf_data_for_user();
+	setInterval(get_surf_data_for_user, 30*60*1000) //update every 30 minutes
+});
 
 
 
@@ -137,8 +150,17 @@ Pebble.addEventListener('showConfiguration', function(e) {
 
 Pebble.addEventListener('webviewclosed',
   function(e) {
-	console.log('Configuration window returned: ' + e.response);
-	get_tide_data_for_user();
+
+	var configData = JSON.parse(decodeURIComponent(e.response));
+
+	// if a spot_id was returned then store it
+	if(configData.spot_id){
+		localStorage.setItem("spot_id", configData.spot_id)
+		//trigger an update
+		date_update_event();
+	}
+
+
   }
 );
 
