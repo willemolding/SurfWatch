@@ -1,16 +1,17 @@
 #include <pebble.h>
 #include "tick_path.h"
-#include "surf_data.h"
+
+#include "data/surf_data.h"
+#include "windows/main_window.h"
+#include "layers/dial_widget.h"
 
 #define SCREEN_WIDTH 180
 #define SCREEN_HEIGHT 180
 #define LEFT_MARGIN 30
 
-// the text layers to display the info
 
 // layers for the load screen animation
 Layer *wave_layer;
-
 
 //////////////////////////////// From Chris
 // Windows and Layers
