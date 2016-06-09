@@ -8,7 +8,7 @@ DialWidgetLayer* dial_widget_layer_create(const GRect frame){
 }
 
 void dial_widget_layer_destroy(DialWidgetLayer *dial_widget_layer){
-  layer_destroy(progress_bar_layer);
+  layer_destroy(dial_widget_layer);
 }
 
 static dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContext *ctx){
@@ -25,7 +25,6 @@ static dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContext *ct
   // draw the center text
   GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
   graphics_context_set_text_color(ctx, GColorBlack);
-
   graphics_draw_text(ctx, 
     layer_get_data(dial_widget_layer)->center_text,
     font,

@@ -58,3 +58,7 @@ enum {
     MIN_SURF_HEIGHT,
     MAX_SURF_HEIGHT 
 };
+
+//Accepts an app message containing a JSON defined surf_data struct
+//stores it in the context which must be a SurfData*
+void receive_surf_data(DictionaryIterator *iterator, void *context);
