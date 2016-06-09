@@ -1,5 +1,4 @@
 #include <pebble.h>
-#include "tide_data.h"
 #include "tick_path.h"
 #include "surf_data.h"
 
@@ -43,7 +42,7 @@ static GFont s_surf_font_24;
 static GFont s_symbol_font_18;
 
 static char wind_strength[] = "100";
-static char swell_strength[] = "100";
+static char swell_height[] = "100";
 static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
 static char wave_height_string[20];
 
@@ -52,7 +51,6 @@ static char wave_height_string[20];
 // text layers to display the data
 TextLayer *tide_event_text_layer;
 
-TideData tide_data;
 static SurfData surf_data;
 
 int current_height;
@@ -113,34 +111,34 @@ int has_data = 0;
 static void update_display_data() {
     time_t t = time(NULL);
 
-    current_height = get_tide_at_time(&tide_data, t);
-    int d1 = abs(current_height/100);
-    int d2 = abs(current_height) - d1*100;
+    // current_height = get_tide_at_time(&tide_data, t);
+    // int d1 = abs(current_height/100);
+    // int d2 = abs(current_height) - d1*100;
 
-    //make sure the sign is right even for d1=0
-    if(current_height>=0)
-      snprintf(height_text,10,"%d.%d%s",d1,d2, tide_data.unit);  
-    else
-      snprintf(height_text,10,"-%d.%d%s",d1,d2, tide_data.unit);  
+    // //make sure the sign is right even for d1=0
+    // if(current_height>=0)
+    //   snprintf(height_text,10,"%d.%d%s",d1,d2, tide_data.unit);  
+    // else
+    //   snprintf(height_text,10,"-%d.%d%s",d1,d2, tide_data.unit);  
 
     //update the star string
-    for(uint16_t i = 0; i < MAX_SURF_RATING; i++){
-        if(i < surf_data.surf_rating){
-          if(i < surf_data.surf_rating - surf_data.wind_rating_penalty){
-            star_string[2*i + 1] = 'w';
-            star_string[2*i + 2] = ' ';
-          }
-          else{
-            star_string[2*i + 1] = 'o';
-            star_string[2*i + 2] = ' ';
-          }
+    // for(uint16_t i = 0; i < MAX_SURF_RATING; i++){
+    //     if(i < surf_data.surf_rating){
+    //       if(i < surf_data.surf_rating - surf_data.wind_rating_penalty){
+    //         star_string[2*i + 1] = 'w';
+    //         star_string[2*i + 2] = ' ';
+    //       }
+    //       else{
+    //         star_string[2*i + 1] = 'o';
+    //         star_string[2*i + 2] = ' ';
+    //       }
 
-        }
-        else{
-          star_string[2*i + 1] = '\0';
-          star_string[2*i + 2] = '\0';
-        }
-    }
+    //     }
+    //     else{
+    //       star_string[2*i + 1] = '\0';
+    //       star_string[2*i + 2] = '\0';
+    //     }
+    // }
 
     //update the height string
     snprintf(wave_height_string, sizeof(wave_height_string), "%d-%d ", 
@@ -158,8 +156,8 @@ static void update_display_data() {
     snprintf(wind_strength, sizeof(wind_strength), "%d", surf_data.wind_strength);
     text_layer_set_text(wind_label, wind_strength);
   
-    snprintf(swell_strength, sizeof(swell_strength), "%d", surf_data.swell_strength);
-    text_layer_set_text(swell_label, swell_strength);
+    snprintf(swell_height, sizeof(swell_height), "%d", surf_data.swell_height);
+    text_layer_set_text(swell_label, swell_height);
   
 }
 
@@ -173,38 +171,12 @@ void error_layer_config_provider(Window *window) {
 }
 
 
-static void push_error(char *error_message){
-
-    Window *error_window = window_create();
-    window_set_click_config_provider(error_window, (ClickConfigProvider) error_layer_config_provider);
-    window_set_background_color(error_window, COLOR_FALLBACK(GColorOrange,GColorWhite));
-    Layer *error_window_layer = window_get_root_layer(error_window);
-    GRect bounds = layer_get_bounds(error_window_layer);
-
-    TextLayer *error_text_layer = text_layer_create((GRect) { .origin = { LEFT_MARGIN, 50 }, .size = { bounds.size.w - LEFT_MARGIN, bounds.size.h } });
-    text_layer_set_text_alignment(error_text_layer, GTextAlignmentCenter);
-    text_layer_set_text(error_text_layer, error_message);
-    text_layer_set_font(error_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28));
-    text_layer_set_background_color(error_text_layer, GColorClear);
-    layer_add_child(error_window_layer, text_layer_get_layer(error_text_layer));
-
-    GBitmap *s_icon_bitmap = gbitmap_create_with_resource(RESOURCE_ID_WARNING);
-    GRect bitmap_bounds = gbitmap_get_bounds(s_icon_bitmap);
-    BitmapLayer *s_icon_layer = bitmap_layer_create((GRect) { .origin = { bounds.origin.x, 20}, .size = { bounds.size.w , 30 } });
-    bitmap_layer_set_bitmap(s_icon_layer, s_icon_bitmap);
-    bitmap_layer_set_compositing_mode(s_icon_layer, GCompOpSet);
-    layer_add_child(error_window_layer, bitmap_layer_get_layer(s_icon_layer));
-
-    window_stack_push(error_window, true);
-}
-
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
 
    // incoming message received
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Message was received");
 
   Tuple *tuple = dict_read_first(iterator);
-  bool is_error = false;
 
   //read in the data from the message using the dictionary iterator
   while (tuple) 
@@ -213,26 +185,28 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     {
       //tide message data
       case NAME:
-        strcpy(tide_data.name,tuple->value->cstring);
+        strncpy(surf_data.name,tuple->value->cstring, MAX_NAME_LEN);
         break;
-      case UNIT:
-        strcpy(tide_data.unit,tuple->value->cstring);
+      case TIDE_UNITS:
+        strncpy(surf_data.tide_units,tuple->value->cstring, MAX_UNIT_LEN);
         break;
-      case N_EVENTS:
-        tide_data.n_events = tuple->value->int32;
+      case TIDE_1_TIME:
+        surf_data.tide_1_time = tuple->value->uint16;
         break;
-      case TIMES:
-        memcpy(tide_data.times.bytes, tuple->value->data, sizeof(IntByteArray));
+      case TIDE_1_HEIGHT:
+        surf_data.tide_1_height = tuple->value->int16;
         break;
-      case HEIGHTS:
-        memcpy(tide_data.heights.bytes, tuple->value->data, sizeof(IntByteArray));
+      case TIDE_1_STATE:
+        surf_data.tide_1_state = tuple->value->uint8;
         break;
-      case EVENTS:
-        memcpy(tide_data.events, tuple->value->data, MAX_TIDE_EVENTS);
+      case TIDE_2_TIME:
+        surf_data.tide_1_time = tuple->value->uint16;
         break;
-      case ERROR_MSG:
-        strcpy(error_message,tuple->value->cstring);
-        is_error = true;
+      case TIDE_2_HEIGHT:
+        surf_data.tide_1_height = tuple->value->int16;
+        break;
+      case TIDE_2_STATE:
+        surf_data.tide_1_state = tuple->value->uint8;
         break;
 
         //surf message data
@@ -243,28 +217,31 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
         surf_data.wind_direction = tuple->value->uint16;
         break;
       case WIND_UNITS:
-        strcpy(surf_data.wind_units,tuple->value->cstring);
+        strncpy(surf_data.wind_units,tuple->value->cstring, MAX_UNIT_LEN);
         break;
-      case SWELL_STRENGTH:
-        surf_data.swell_strength = tuple->value->uint16;
+
+      case SWELL_HEIGHT:
+        surf_data.swell_height = tuple->value->uint16;
         break;
       case SWELL_DIRECTION:
         surf_data.swell_direction = tuple->value->uint16;
         break;
       case SWELL_UNITS:
-        strcpy(surf_data.swell_units,tuple->value->cstring);
+        strncpy(surf_data.swell_units,tuple->value->cstring, MAX_UNIT_LEN);
         break;
-      case SURF_RATING:
-        surf_data.surf_rating = tuple->value->uint16;
+
+      case SOLID_RATING:
+        surf_data.solid_rating = tuple->value->uint16;
         break;
+      case FADED_RATING:
+        surf_data.faded_rating = tuple->value->uint16;
+        break;
+
       case MIN_SURF_HEIGHT:
         surf_data.min_surf_height = tuple->value->uint16;
         break;
       case MAX_SURF_HEIGHT:
         surf_data.max_surf_height = tuple->value->uint16;
-        break;
-      case WIND_RATING_PENALTY:
-        surf_data.wind_rating_penalty = tuple->value->uint16;
         break;
 
     }
@@ -272,15 +249,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     tuple = dict_read_next(iterator);
   }
 
-  if(is_error == false) {
-
-    has_data = 1;
-    store_tide_data(&tide_data);
-  }
-  else { // push an error message window to the stack
-      push_error(error_message);
-  }
-
+  has_data = 1;
   update_display_data();
 
 }
@@ -290,36 +259,36 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
 }
 
 static void wave_layer_update_callback(Layer *layer, GContext *ctx) {
-  GRect bounds = layer_get_bounds(layer);
+  // GRect bounds = layer_get_bounds(layer);
 
-  // for every pixel in the layer draw a vertical line at the wave height
-  const int max_wave_height = 10;
-  const int offset = 10;
-  const float cycles = 1.5;
+  // // for every pixel in the layer draw a vertical line at the wave height
+  // const int max_wave_height = 10;
+  // const int offset = 10;
+  // const float cycles = 1.5;
 
 
-  // There might be a bug in this part of the code... Check it properly layer after getting some sleep.
-  time_t t = time(NULL);
-  int low_t = get_time_to_next_low(&tide_data, t);
-  int T = get_tide_period(&tide_data, t);
+  // // There might be a bug in this part of the code... Check it properly layer after getting some sleep.
+  // time_t t = time(NULL);
+  // int low_t = get_time_to_next_low(&tide_data, t);
+  // int T = get_tide_period(&tide_data, t);
 
-  int pixel_period = bounds.size.w / cycles;
-  int pixel_offset = pixel_period * (t - low_t) / (2*T); //the phase indicates how close it is to a low tide in pixels
+  // int pixel_period = bounds.size.w / cycles;
+  // int pixel_offset = pixel_period * (t - low_t) / (2*T); //the phase indicates how close it is to a low tide in pixels
 
-  graphics_context_set_stroke_color(ctx,GColorPictonBlue);          
-  graphics_context_set_stroke_width(ctx,1);
-  for(int i = 0; i < bounds.size.w; i++){
-    int height = cos_lookup((i + pixel_offset) * TRIG_MAX_ANGLE * cycles / bounds.size.w) * max_wave_height / TRIG_MAX_RATIO;
-    graphics_draw_line(ctx,GPoint(i, bounds.size.h),
-                           GPoint(i, bounds.size.h / 2 - height - offset));      
-  } 
+  // graphics_context_set_stroke_color(ctx,GColorPictonBlue);          
+  // graphics_context_set_stroke_width(ctx,1);
+  // for(int i = 0; i < bounds.size.w; i++){
+  //   int height = cos_lookup((i + pixel_offset) * TRIG_MAX_ANGLE * cycles / bounds.size.w) * max_wave_height / TRIG_MAX_RATIO;
+  //   graphics_draw_line(ctx,GPoint(i, bounds.size.h),
+  //                          GPoint(i, bounds.size.h / 2 - height - offset));      
+  // } 
 
-  //draw the tick marker line
-  graphics_context_set_stroke_color(ctx,GColorBlack);  
-  graphics_context_set_stroke_width(ctx,1);    
-  graphics_draw_line(ctx,GPoint(bounds.size.w / 3, 4),
-                         GPoint(bounds.size.w / 3, bounds.size.h));
-  graphics_draw_circle(ctx,GPoint(bounds.size.w / 3, 2),2);
+  // //draw the tick marker line
+  // graphics_context_set_stroke_color(ctx,GColorBlack);  
+  // graphics_context_set_stroke_width(ctx,1);    
+  // graphics_draw_line(ctx,GPoint(bounds.size.w / 3, 4),
+  //                        GPoint(bounds.size.w / 3, bounds.size.h));
+  // graphics_draw_circle(ctx,GPoint(bounds.size.w / 3, 2),2);
 
 }
 
@@ -469,8 +438,8 @@ static void window_load(Window *window) {
   
   // Create the swell text layer
   swell_label = text_layer_create(GRect((bounds.size.w / 4) - 10, ((bounds.size.h / 2) - 7), 30, 15));
-  snprintf(swell_strength, sizeof(swell_strength), "%d", surf_data.swell_strength);
-  text_layer_set_text(swell_label, swell_strength);
+  snprintf(swell_height, sizeof(swell_height), "%d", surf_data.swell_height);
+  text_layer_set_text(swell_label, swell_height);
   text_layer_set_background_color(swell_label, GColorClear);
   text_layer_set_font(swell_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   text_layer_set_text_alignment(swell_label, GTextAlignmentCenter);
@@ -505,27 +474,6 @@ static void window_load(Window *window) {
   text_layer_set_background_color(tide_event_text_layer, GColorClear);
   text_layer_set_text_alignment(tide_event_text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(tide_event_text_layer));
-
-
-  //if there is already data cached and it is valid then load it
-  if(load_tide_data(&tide_data)) {
-    time_t t = time(NULL);
-    current_height = get_tide_at_time(&tide_data, t);
-    if(current_height != -1){
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "Valid cached data found.");
-
-      has_data = 1;
-
-      update_display_data();
-    }
-    else{
-        APP_LOG(APP_LOG_LEVEL_DEBUG, "Cached data was found but it is out of date.");
-    }
-  }
-  
-  if(has_data != 1){
-    //load animation
-  }
 
 }
 
@@ -581,7 +529,7 @@ static void init(void) {
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
   if(!bluetooth_connection_service_peek()){
-    push_error("No phone connection");
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "No Phone Connection!");
   }
 
   window_stack_push(window, animated);
