@@ -3,6 +3,7 @@
 static Window *window;
 
 static void window_load(Window *window) {
+
   Layer *window_layer = window_get_root_layer(window);
 
   GRect bounds = layer_get_bounds(window_layer);
@@ -101,7 +102,7 @@ void main_window_push() {
     window = window_create();
     window_set_window_handlers(window, (WindowHandlers) {
       .load = window_load,
-      .unload = window_unload,
+      .unload = window_unload
     });
   }
   window_stack_push(window, true);

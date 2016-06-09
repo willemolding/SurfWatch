@@ -19,7 +19,7 @@ DialWidgetLayer* dial_widget_layer_create(const GRect frame);
 
 void dial_widget_layer_destroy(DialWidgetLayer *dial_widget_layer);
 
-static dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContext *ctx);
+static void dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContext *ctx);
 
 void dial_widget_set_center_text(DialWidgetLayer * dial_widget_layer, char *text);
 

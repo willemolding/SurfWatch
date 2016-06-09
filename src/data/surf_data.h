@@ -1,5 +1,7 @@
 #pragma once
 
+#include <pebble.h>
+
 #define MAX_SURF_RATING 10
 #define MAX_UNIT_LEN 4
 #define MAX_NAME_LEN 100

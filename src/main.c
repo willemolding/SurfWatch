@@ -32,17 +32,12 @@ static GPath *s_swell_ticks;
 // Textlayers
 static TextLayer *surf_label;
 static TextLayer *star_label;
-static TextLayer *wind_label;
-static TextLayer *swell_label;
-static TextLayer *wind_units_label;
-static TextLayer *swell_units_label;
+
 
 // Fonts
 static GFont s_surf_font_24;
 static GFont s_symbol_font_18;
 
-static char wind_strength[] = "100";
-static char swell_height[] = "100";
 static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
 static char wave_height_string[20];
 
@@ -57,7 +52,6 @@ int current_height;
 
 // string buffers
 static char height_text[10];
-static char error_message[50];
 
 float my_sqrt(const float num) {
   const uint MAX_STEPS = 40;
@@ -104,9 +98,6 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
   info->points[5].y = min;
   
  }
-
-
-int has_data = 0;
 
 static void update_display_data() {
     time_t t = time(NULL);
@@ -162,14 +153,6 @@ static void update_display_data() {
 }
 
 
-//ensure that pressing back during an error dialog quits the app
-void error_back_click_handler(ClickRecognizerRef recognizer, void *context) {
-  window_stack_pop_all(true);
-}
-void error_layer_config_provider(Window *window) {
-  window_single_click_subscribe(BUTTON_ID_BACK, error_back_click_handler);
-}
-
 static void inbox_received_callback(DictionaryIterator *iter, void *context) {
   receive_surf_data(iter, context);
   update_display_data();
@@ -179,41 +162,6 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
   APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
 }
 
-
-
-static void wave_layer_update_callback(Layer *layer, GContext *ctx) {
-  // GRect bounds = layer_get_bounds(layer);
-
-  // // for every pixel in the layer draw a vertical line at the wave height
-  // const int max_wave_height = 10;
-  // const int offset = 10;
-  // const float cycles = 1.5;
-
-
-  // // There might be a bug in this part of the code... Check it properly layer after getting some sleep.
-  // time_t t = time(NULL);
-  // int low_t = get_time_to_next_low(&tide_data, t);
-  // int T = get_tide_period(&tide_data, t);
-
-  // int pixel_period = bounds.size.w / cycles;
-  // int pixel_offset = pixel_period * (t - low_t) / (2*T); //the phase indicates how close it is to a low tide in pixels
-
-  // graphics_context_set_stroke_color(ctx,GColorPictonBlue);          
-  // graphics_context_set_stroke_width(ctx,1);
-  // for(int i = 0; i < bounds.size.w; i++){
-  //   int height = cos_lookup((i + pixel_offset) * TRIG_MAX_ANGLE * cycles / bounds.size.w) * max_wave_height / TRIG_MAX_RATIO;
-  //   graphics_draw_line(ctx,GPoint(i, bounds.size.h),
-  //                          GPoint(i, bounds.size.h / 2 - height - offset));      
-  // } 
-
-  // //draw the tick marker line
-  // graphics_context_set_stroke_color(ctx,GColorBlack);  
-  // graphics_context_set_stroke_width(ctx,1);    
-  // graphics_draw_line(ctx,GPoint(bounds.size.w / 3, 4),
-  //                        GPoint(bounds.size.w / 3, bounds.size.h));
-  // graphics_draw_circle(ctx,GPoint(bounds.size.w / 3, 2),2);
-
-}
 
 // Update the three clock hands
 static void hands_update_proc(Layer *layer, GContext *ctx) {
@@ -225,7 +173,7 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   struct tm *t = localtime(&now);
   
   //TODO replace these with the dialWidget layer
-  
+
   // // Draw Wind Hand
   // int wind_direction = surf_data.wind_direction;
   // GRect wind_hand = GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 40, 40);
@@ -270,16 +218,6 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
 static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
   
   GRect bounds = layer_get_bounds(window_get_root_layer (window));
-  
-  // Draw wind circle
-  graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
-  graphics_draw_circle(ctx, GPoint(((bounds.size.w / 4) * 3) - 5, ((bounds.size.h / 2) + 8)), 20);
-  graphics_draw_circle(ctx, GPoint(((bounds.size.w / 4) * 3) - 5, ((bounds.size.h / 2) + 8)), 15);
-  
-  // Draw swell circle
-  graphics_context_set_stroke_color(ctx, GColorCobaltBlue);
-  graphics_draw_circle(ctx, GPoint((bounds.size.w / 4) + 5, ((bounds.size.h / 2) + 8)), 20);
-  graphics_draw_circle(ctx, GPoint((bounds.size.w / 4) + 5, ((bounds.size.h / 2) + 8)), 15);
   
   // Draw large ticks
   for (int c = 0; c < 4; c++){
@@ -378,15 +316,11 @@ static void init(void) {
 }
 
 static void deinit(void) {
-  window_destroy(window);
-  destroy_layers();
+  //TODO: add cleanup code
 }
 
 int main(void) {
   init();
-
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Done initializing, pushed window: %p", window);
-
   app_event_loop();
   deinit();
 }
