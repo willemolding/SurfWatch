@@ -73,7 +73,7 @@
 			var site_id = $("input[name='radio-1']:checked").val();
 			alert("Selected site_id: "+site_id);
 			var return_to = getQueryParam('return_to', 'pebblejs://close#');
-			document.location = return_to + site_id;
+			document.location = return_to + encodeURIComponent(site_id);
 		}
 
 

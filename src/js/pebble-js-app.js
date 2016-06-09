@@ -10,6 +10,7 @@ const locationOptions = {
 	timeout: 10000
 };
 
+var spot_id = null;
 
 function send_pebble_message(message) {
 	Pebble.sendAppMessage(message,
@@ -20,17 +21,6 @@ function send_pebble_message(message) {
 		console.log('Send failed!');
 		}
 	);
-}
-
-
-
-function getInt32Bytes( x ) {
-	var bytes = [];
-	for (var i = 0; i < 4; i++){
-		bytes[i] = x & (255);
-		x = x>>8;
-	}
-	return bytes;
 }
 
 
@@ -53,15 +43,15 @@ function add_forecast_data_to_message(response){
 }
 
 function add_tide_data_to_message(response) {
-  message['TIDE_UNITS'] = response.unit
+	message['TIDE_UNITS'] = response.unit
 
-  message['TIDE_1_TIME'] = response.tide[0].timestamp
-  message['TIDE_1_HEIGHT'] = response.tide[0].shift
-  message['TIDE_1_STATE'] = response.tide[0].state
+	message['TIDE_1_TIME'] = response.tide[0].timestamp
+	message['TIDE_1_HEIGHT'] = response.tide[0].shift
+	message['TIDE_1_STATE'] = response.tide[0].state
 
-  message['TIDE_2_TIME'] = response.tide[1].timestamp
-  message['TIDE_2_HEIGHT'] = response.tide[1].shift
-  message['TIDE_2_STATE'] =response.tide[1].state
+	message['TIDE_2_TIME'] = response.tide[1].timestamp
+	message['TIDE_2_HEIGHT'] = response.tide[1].shift
+	message['TIDE_2_STATE'] =response.tide[1].state
 }
 
 
@@ -97,16 +87,7 @@ function make_request(url, success_callback) {
 function data_update_event(){
 
 	console.log('Loading surf data...');
-
-	//retrieve the stored spot_id
-	var spot_id = localStorage.getItem('spot_id');
-
-	if(!spot_id) {
-		Pebble.showSimpleNotificationOnPebble("Please Open Config", 
-			"You have not yet selected a location. Please open the configuration page.");
-	}
-	else {
-
+	if(spot_id){
 		//make the forecase request
 		make_request(msw_forecast_url+'?spot_id='+spot_id, 
 			function(request) {
@@ -124,11 +105,19 @@ function data_update_event(){
 		//whatever we receive to the watch
 		send_pebble_message(message);
 	}
-
 }
 
 
 Pebble.addEventListener("ready", function(e) {
+
+	//retrieve the stored spot_id
+	spot_id = localStorage.getItem('spot_id');
+
+	if(!spot_id) {
+		Pebble.showSimpleNotificationOnPebble("Please Open Config", 
+			"You have not yet selected a location. Please open the configuration page.");
+	}
+
 	data_update_event();
 	setInterval(data_update_event, 30*60*1000); //update every 30 minutes
 });
@@ -156,11 +145,14 @@ Pebble.addEventListener('showConfiguration', function(e) {
 
 Pebble.addEventListener('webviewclosed', function(e) {
 
-	var configData = JSON.parse(decodeURIComponent(e.response));
+	var returned_spot_id = decodeURIComponent(e.response);
+
+	console.log(returned_spot_id);
 
 	// if a spot_id was returned then store it
-	if(configData.spot_id){
-		localStorage.setItem("spot_id", configData.spot_id)
+	if(returned_spot_id){
+		spot_id = returned_spot_id;
+		localStorage.setItem("spot_id", spot_id);
 		//trigger an update
 		date_update_event();
 	}
