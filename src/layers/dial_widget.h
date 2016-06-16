@@ -10,9 +10,14 @@
 
 typedef Layer DialWidgetLayer;
 
+typedef struct Vector {
+    uint16_t magnitude;
+    uint16_t direction; //direction should be in degrees
+} Vector;
+
 typedef struct {
-	char *center_text;
-	uint16_t direction;
+	char *units;
+	Vector vec;
 } DialWidgetData;
 
 DialWidgetLayer* dial_widget_layer_create(const GRect frame);
@@ -21,6 +26,6 @@ void dial_widget_layer_destroy(DialWidgetLayer *dial_widget_layer);
 
 static void dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContext *ctx);
 
-void dial_widget_set_center_text(DialWidgetLayer * dial_widget_layer, char *text);
+void dial_widget_set_unit(DialWidgetLayer *dial_widget_layer, char *units);
 
-void dial_widget_set_direction(DialWidgetLayer *dial_widget_layer, uint16_t direction);
+void dial_widget_set_vector(DialWidgetLayer *dial_widget_layer, Vector vec);

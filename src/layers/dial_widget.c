@@ -39,12 +39,13 @@ static void dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContex
     NULL);
 }
 
-void dial_widget_set_center_text(DialWidgetLayer * dial_widget_layer, char *text){
+void dial_widget_set_unit(DialWidgetLayer *dial_widget_layer, char *units){
   DialWidgetData *data = (DialWidgetData*)layer_get_data(dial_widget_layer);
-	data->center_text = text;
+  data->units = units;
+
 }
 
-void dial_widget_set_direction(DialWidgetLayer *dial_widget_layer, uint16_t direction){
-  DialWidgetData *data = (DialWidgetData*)layer_get_data(dial_widget_layer);
-	data->direction = direction;
+void dial_widget_set_vector(DialWidgetLayer *dial_widget_layer, Vector vec){
+    DialWidgetData *data = (DialWidgetData*)layer_get_data(dial_widget_layer);
+    data->vec = vec;
 }
