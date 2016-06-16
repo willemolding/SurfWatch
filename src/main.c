@@ -17,7 +17,6 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
 }
 
 
-
 static void init(void) {
 
   app_message_register_inbox_received(inbox_received_callback);
