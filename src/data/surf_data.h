@@ -5,29 +5,33 @@
 #define MAX_SURF_RATING 10
 #define MAX_UNIT_LEN 4
 #define MAX_NAME_LEN 100
+#define N_TIDE_POINTS 2
+
+typedef struct TidePoint{
+    uint16_t time; //time is stored as a utc timestamp
+    int16_t height; //height is stored as the decimal height multiplied by 100 e.g. 1.13 is stored as 113
+    uint8_t state;
+} TidePoint;
+
+typedef struct Vector {
+    uint16_t magnitude;
+    uint16_t direction; //direction should be in degrees
+} Vector;
 
  typedef struct SurfData {
     char name[MAX_NAME_LEN];
 
     char tide_units[MAX_UNIT_LEN];
 
-    uint16_t tide_1_time;
-    int16_t tide_1_height;
-    uint8_t tide_1_state;
-
-    uint16_t tide_2_time;
-    int16_t tide_2_height;
-    uint8_t tide_2_state;
+    TidePoint[N_TIDE_POINTS] tide_points;
 
     uint16_t solid_rating;
     uint16_t faded_rating;
 
-    uint16_t swell_height;
-    uint16_t swell_direction;
+    Vector swell;
     char swell_units[MAX_UNIT_LEN];
 
- 	uint16_t wind_strength;
-    uint16_t wind_direction;
+ 	Vector wind;
     char wind_units[MAX_UNIT_LEN];
 
     uint16_t min_surf_height;

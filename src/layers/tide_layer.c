@@ -23,7 +23,6 @@ static tide_layer_update(TideLayer *tide_layer, GContext *ctx){
   const int offset = 10;
   const float cycles = 1.5;
 
-
   // There might be a bug in this part of the code... Check it properly layer after getting some sleep.
   time_t t = time(NULL);
   int low_t = get_time_to_next_low(&tide_data, t);

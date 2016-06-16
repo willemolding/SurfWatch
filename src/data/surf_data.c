@@ -22,40 +22,40 @@ void receive_surf_data(DictionaryIterator *iterator, void *context) {
         strncpy(surf_data->tide_units,tuple->value->cstring, MAX_UNIT_LEN);
         break;
       case TIDE_1_TIME:
-        surf_data->tide_1_time = tuple->value->uint16;
+        surf_data->tide_points[0].time = tuple->value->uint16;
         break;
       case TIDE_1_HEIGHT:
-        surf_data->tide_1_height = tuple->value->int16;
+        surf_data->tide_points[0].height = tuple->value->int16;
         break;
       case TIDE_1_STATE:
-        surf_data->tide_1_state = tuple->value->uint8;
+        surf_data->tide_points[0].state = tuple->value->uint8;
         break;
       case TIDE_2_TIME:
-        surf_data->tide_1_time = tuple->value->uint16;
+        surf_data->tide_points[1].time = tuple->value->uint16;
         break;
       case TIDE_2_HEIGHT:
-        surf_data->tide_1_height = tuple->value->int16;
+        surf_data->tide_points[1].height = tuple->value->int16;
         break;
       case TIDE_2_STATE:
-        surf_data->tide_1_state = tuple->value->uint8;
+        surf_data->tide_points[1].state = tuple->value->uint8;
         break;
 
         //surf message data
       case WIND_STRENGTH:
-        surf_data->wind_strength = tuple->value->uint16;
+        surf_data->wind.magnitude = tuple->value->uint16;
         break;
       case WIND_DIRECTION:
-        surf_data->wind_direction = tuple->value->uint16;
+        surf_data->wind.direction = tuple->value->uint16;
         break;
       case WIND_UNITS:
         strncpy(surf_data->wind_units,tuple->value->cstring, MAX_UNIT_LEN);
         break;
 
       case SWELL_HEIGHT:
-        surf_data->swell_height = tuple->value->uint16;
+        surf_data->swell.magnitude = tuple->value->uint16;
         break;
       case SWELL_DIRECTION:
-        surf_data->swell_direction = tuple->value->uint16;
+        surf_data->swell.direction = tuple->value->uint16;
         break;
       case SWELL_UNITS:
         strncpy(surf_data->swell_units,tuple->value->cstring, MAX_UNIT_LEN);
