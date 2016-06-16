@@ -1,6 +1,9 @@
 #pragma once
 
 #include <pebble.h>
+#include "../data/vector.h"
+
+#define MAX_CENTER_TEXT 10
 
 // A dial widget is a circular  dial that is well suited to displaying data that is 
 // comprised of a magnitude and direction component e.g wind speed and direction. 
@@ -10,11 +13,6 @@
 
 typedef Layer DialWidgetLayer;
 
-typedef struct Vector {
-    uint16_t magnitude;
-    uint16_t direction; //direction should be in degrees
-} Vector;
-
 typedef struct {
 	char *units;
 	Vector vec;
@@ -23,8 +21,6 @@ typedef struct {
 DialWidgetLayer* dial_widget_layer_create(const GRect frame);
 
 void dial_widget_layer_destroy(DialWidgetLayer *dial_widget_layer);
-
-static void dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContext *ctx);
 
 void dial_widget_set_unit(DialWidgetLayer *dial_widget_layer, char *units);
 

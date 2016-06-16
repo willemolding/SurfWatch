@@ -1,18 +1,20 @@
 #include "main_window.h"
 #include "../data/surf_data.h"
 #include "../layers/dial_widget.h"
+#include "../layers/clock_layer.h"
 
 static Window *window;
 
+static SurfData *surf_data;
+
 //speical layers
-static ClockLayer clock_layer;
-static DialWidget wind_dial, swell_dial;
-static TideLayer tide_layer;
+static ClockLayer *clock_layer;
+static DialWidgetLayer *wind_dial, *swell_dial;
+// static TideLayer *tide_layer;
 
 // Textlayers
 static TextLayer *surf_label;
-static TextLayer *star_label;
-
+static TextLayer *star_label; 
 
 // Fonts
 static GFont s_surf_font_24;
@@ -21,6 +23,36 @@ static GFont s_symbol_font_18;
 static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
 static char wave_height_string[20];
 
+static void update_display_data() {
+    // //update the star string
+    // for(uint16_t i = 0; i < MAX_SURF_RATING; i++){
+    //     if(i < surf_data->surf_rating){
+    //       if(i < surf_data->surf_rating + surf_data->wind_rating_penalty){
+    //         star_string[2*i + 1] = 'w';
+    //         star_string[2*i + 2] = ' ';
+    //       }
+    //       else{
+    //         star_string[2*i + 1] = 'o';
+    //         star_string[2*i + 2] = ' ';
+    //       }
+
+    //     }
+    //     else{
+    //       star_string[2*i + 1] = '\0';
+    //       star_string[2*i + 2] = '\0';
+    //     }
+    // }
+
+    //update the height string
+    // snprintf(wave_height_string, sizeof(wave_height_string), "%d-%d ", 
+    //   surf_data->min_surf_height, surf_data->max_surf_height);
+
+    // strcat(wave_height_string, surf_data->swell_units);
+
+    // text_layer_set_text(star_label, star_string);
+    // text_layer_set_text(tide_event_text_layer, height_text);
+}
+
 
 static void window_load(Window *window) {
 
@@ -28,12 +60,6 @@ static void window_load(Window *window) {
 
   GRect bounds = layer_get_bounds(window_layer);
 
-
-  //add the wave layer at the base
-  GRect wave_layer_bounds = grect_inset(bounds, GEdgeInsets(SCREEN_HEIGHT * 3 / 4, 0, 0));
-  wave_layer = layer_create(wave_layer_bounds);
-  layer_set_update_proc(wave_layer, wave_layer_update_callback);
-  layer_add_child(window_layer, wave_layer);
 
   ////////////////////////////////////// From Chris
   // Load Font
@@ -54,74 +80,19 @@ static void window_load(Window *window) {
   text_layer_set_font(star_label, s_symbol_font_18);
   text_layer_set_text_alignment(star_label, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(star_label));
-  
-  // Create the wind text layer
-  wind_label = text_layer_create(GRect(((bounds.size.w / 4) * 3) - 19, ((bounds.size.h / 2) - 8), 30, 15));
-  snprintf(wind_strength, sizeof(wind_strength), "%d", surf_data.wind_strength);
-  text_layer_set_text(wind_label, wind_strength);
-  text_layer_set_background_color(wind_label, GColorClear);
-  text_layer_set_font(wind_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-  text_layer_set_text_alignment(wind_label, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(wind_label));
-  
-  // Create the wind units text layer
-  wind_units_label = text_layer_create(GRect(((bounds.size.w / 4) * 3) - 19, ((bounds.size.h / 2) + 5), 30, 15));
-  text_layer_set_text(wind_units_label, surf_data.wind_units);
-  text_layer_set_background_color(wind_units_label, GColorClear);
-  text_layer_set_font(wind_units_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-  text_layer_set_text_alignment(wind_units_label, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(wind_units_label));
-  
-  // Create the swell text layer
-  swell_label = text_layer_create(GRect((bounds.size.w / 4) - 10, ((bounds.size.h / 2) - 7), 30, 15));
-  snprintf(swell_height, sizeof(swell_height), "%d", surf_data.swell_height);
-  text_layer_set_text(swell_label, swell_height);
-  text_layer_set_background_color(swell_label, GColorClear);
-  text_layer_set_font(swell_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-  text_layer_set_text_alignment(swell_label, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(swell_label));
-  
-  // Create the swell units text layer
-  swell_units_label = text_layer_create(GRect((bounds.size.w / 4) - 10, ((bounds.size.h / 2) + 5), 30, 15));
-  text_layer_set_text(swell_units_label, surf_data.swell_units);
-  text_layer_set_background_color(swell_units_label, GColorClear);
-  text_layer_set_font(swell_units_label, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-  text_layer_set_text_alignment(swell_units_label, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(swell_units_label));
-  
-  // Create background layer
-  s_canvas_layer = layer_create(GRect(0, 0, bounds.size.w, bounds.size.h));
-  layer_add_child(window_layer, s_canvas_layer);
-  layer_set_update_proc(s_canvas_layer, canvas_update_proc);
-  
-  // Create hands layer
-  s_hands_layer = layer_create(bounds);
-  layer_set_update_proc(s_hands_layer, hands_update_proc);
-  layer_add_child(window_layer, s_hands_layer);
 
-  //////////////////////////////////////////////////
-
-  //create the event text layer
-  GRect tide_event_text_layer_bounds = GRect(SCREEN_WIDTH/3 - 40, SCREEN_HEIGHT * 3 / 4 - 20,
-                                             SCREEN_WIDTH/3 + 20, SCREEN_HEIGHT * 3 / 4 + 20);
-  tide_event_text_layer = text_layer_create(tide_event_text_layer_bounds);
-  text_layer_set_text(tide_event_text_layer, "Loading");
-  text_layer_set_font(tide_event_text_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
-  text_layer_set_background_color(tide_event_text_layer, GColorClear);
-  text_layer_set_text_alignment(tide_event_text_layer, GTextAlignmentCenter);
-  layer_add_child(window_layer, text_layer_get_layer(tide_event_text_layer));
 
 }
 
 static void window_unload(Window *window) {
-  window_destroy(s_window);
+  window_destroy(window);
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   layer_mark_dirty(clock_layer);
 }
 
-void main_window_push() {
+void main_window_push(SurfData *surf_data) {
   if(!window) {
     window = window_create();
     window_set_window_handlers(window, (WindowHandlers) {

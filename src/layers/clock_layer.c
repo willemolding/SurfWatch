@@ -1,5 +1,5 @@
 #include "clock_layer.h"
-
+#include "tick_path.h"
 
 // Coordinate Paths
 static GPath *s_large_ticks;
@@ -7,34 +7,54 @@ static GPath *s_small_ticks;
 static GPath *s_hour_hand;
 static GPath *s_minute_hand;
 
-
-ClockLayer* clock_layer_create(const GRect frame){
-	ClockLayer *clock_layer = layer_create(frame);
-	layer_set_update_proc(clock_layer,dial_widget_layer_update);
-
-  //Create coordinate paths
-  s_large_ticks = gpath_create(&LARGE_TICKS);
-  s_small_ticks = gpath_create(&SMALL_TICKS);
-
-  s_hour_hand = gpath_create(&HOUR_HAND);
-  s_minute_hand = gpath_create(&MINUTE_HAND);
-
-  // Center the coordinate paths
-  GPoint center = grect_center_point(&frame);
-  gpath_move_to(s_large_ticks, center);
-  gpath_move_to(s_small_ticks, center);
-  gpath_move_to(s_hour_hand, center);
-  gpath_move_to(s_minute_hand, center);
+static float my_sqrt(const float num) {
+  const uint MAX_STEPS = 40;
+  const float MAX_ERROR = 0.001;
   
-	return clock_layer;
+  float answer = num;
+  float ans_sqr = answer * answer;
+  uint step = 0;
+  while((ans_sqr - num > MAX_ERROR) && (step++ < MAX_STEPS)) {
+    answer = (answer + (num / answer)) / 2;
+    ans_sqr = answer * answer;
+  }
+  return answer;
 }
 
-void clock_layer_destroy(ClockLayer *clock_layer){
-  layer_destroy(clock_layer);
+static float getRadius(int a, int b, int theta) {
+     float s = (float)sin_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+     float c = (float)cos_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
+     return (a * b) / (my_sqrt((a*a)*(s*s)+(b*b)*(c*c)));
 }
 
+static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *info){
+  int b = bounds.size.w;
+  int a = bounds.size.h;
+  
+  float value = (getRadius(a, b, theta)) / 2;
+  
+  int max = (int)value - 8;
+  if(hand == 2){
+    max = max / 2;
+  }
+  int min;
+  if(max >= 0){
+    max = (max * (-1));
+    min = max + 5;
+  } else {
+    max = (max * (-1));
+    min = max - 5;
+  }
+  
+  info->points[2].y = min;
+  info->points[3].y = max;
+  info->points[4].y = max;
+  info->points[5].y = min;
+  
+ }
 
-static clock_layer_update(ClockLayer *clock_layer, GContext *ctx){
+
+ static void clock_layer_update(ClockLayer *clock_layer, GContext *ctx){
 
   GRect bounds = layer_get_bounds(clock_layer);
   GPoint center = grect_center_point(&bounds);
@@ -98,4 +118,31 @@ static clock_layer_update(ClockLayer *clock_layer, GContext *ctx){
   
   graphics_fill_radial(ctx, GRect((bounds.size.w / 2) - 3, (bounds.size.h / 2) - 3, 5, 5), GOvalScaleModeFitCircle, 5, 0, TRIG_MAX_ANGLE);
   
+}
+
+
+
+ClockLayer* clock_layer_create(const GRect frame){
+	ClockLayer *clock_layer = layer_create(frame);
+	layer_set_update_proc(clock_layer,clock_layer_update);
+
+  //Create coordinate paths
+  s_large_ticks = gpath_create(&LARGE_TICKS);
+  s_small_ticks = gpath_create(&SMALL_TICKS);
+
+  s_hour_hand = gpath_create(&HOUR_HAND);
+  s_minute_hand = gpath_create(&MINUTE_HAND);
+
+  // Center the coordinate paths
+  GPoint center = grect_center_point(&frame);
+  gpath_move_to(s_large_ticks, center);
+  gpath_move_to(s_small_ticks, center);
+  gpath_move_to(s_hour_hand, center);
+  gpath_move_to(s_minute_hand, center);
+  
+	return clock_layer;
+}
+
+void clock_layer_destroy(ClockLayer *clock_layer){
+  layer_destroy(clock_layer);
 }

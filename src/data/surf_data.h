@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pebble.h>
+#include "vector.h"
 
 #define MAX_SURF_RATING 10
 #define MAX_UNIT_LEN 4
@@ -13,17 +14,13 @@ typedef struct TidePoint{
     uint8_t state;
 } TidePoint;
 
-typedef struct Vector {
-    uint16_t magnitude;
-    uint16_t direction; //direction should be in degrees
-} Vector;
 
  typedef struct SurfData {
     char name[MAX_NAME_LEN];
 
     char tide_units[MAX_UNIT_LEN];
 
-    TidePoint[N_TIDE_POINTS] tide_points;
+    TidePoint tide_points[N_TIDE_POINTS];
 
     uint16_t solid_rating;
     uint16_t faded_rating;
