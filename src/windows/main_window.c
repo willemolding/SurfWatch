@@ -1,6 +1,26 @@
 #include "main_window.h"
+#include "../data/surf_data.h"
+#include "../layers/dial_widget.h"
 
 static Window *window;
+
+//speical layers
+static ClockLayer clock_layer;
+static DialWidget wind_dial, swell_dial;
+static TideLayer tide_layer;
+
+// Textlayers
+static TextLayer *surf_label;
+static TextLayer *star_label;
+
+
+// Fonts
+static GFont s_surf_font_24;
+static GFont s_symbol_font_18;
+
+static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
+static char wave_height_string[20];
+
 
 static void window_load(Window *window) {
 
@@ -97,6 +117,10 @@ static void window_unload(Window *window) {
   window_destroy(s_window);
 }
 
+static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+  layer_mark_dirty(clock_layer);
+}
+
 void main_window_push() {
   if(!window) {
     window = window_create();
@@ -105,5 +129,8 @@ void main_window_push() {
       .unload = window_unload
     });
   }
+
+  tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
+
   window_stack_push(window, true);
 }

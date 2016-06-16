@@ -1,5 +1,8 @@
 #include "tide_layer.h"
 
+// text layers to display the data
+TextLayer *tide_event_text_layer;
+
 TideLayer* tide_layer_create(const GRect frame){
 	TideLayer *tide_layer = layer_create(frame);
 	layer_set_update_proc(tide_layer,dial_widget_layer_update);

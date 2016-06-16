@@ -3,51 +3,10 @@
 
 #include "data/surf_data.h"
 #include "windows/main_window.h"
-#include "layers/dial_widget.h"
-
-#define SCREEN_WIDTH 180
-#define SCREEN_HEIGHT 180
-#define LEFT_MARGIN 30
-
-
-// layers for the load screen animation
-Layer *wave_layer;
-
-//////////////////////////////// From Chris
-// Windows and Layers
-static Layer *s_canvas_layer;
-static Layer *s_hands_layer;
-
-
-// Coordinate Paths
-static GPath *s_large_ticks;
-static GPath *s_small_ticks;
-static GPath *s_hour_hand;
-static GPath *s_minute_hand;
-
-// Textlayers
-static TextLayer *surf_label;
-static TextLayer *star_label;
-
-
-// Fonts
-static GFont s_surf_font_24;
-static GFont s_symbol_font_18;
-
-static char star_string[2*MAX_SURF_RATING + 1] = "                    ";
-static char wave_height_string[20];
-
-////////////////////////////////////////////
-
-// text layers to display the data
-TextLayer *tide_event_text_layer;
 
 static SurfData surf_data;
 
 int current_height;
-
-// string buffers
-static char height_text[10];
 
 float my_sqrt(const float num) {
   const uint MAX_STEPS = 40;
@@ -150,32 +109,7 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
 
 
 static void destroy_layers(){
-  // layer_destroy(wave_layer);
-  // text_layer_destroy(tide_event_text_layer);
 
-  // // Destroy Layers
-  // layer_destroy(s_canvas_layer);
-  // layer_destroy(s_hands_layer);
-  // text_layer_destroy(surf_label);
-  // text_layer_destroy(star_label);
-  
-  // // Destroy fonts
-  // fonts_unload_custom_font(s_surf_font_24);
-  // fonts_unload_custom_font(s_symbol_font_18);
-}
-
-// Function to update the time
-static void update_time() {
-  // Get the current time
-  time_t temp = time(NULL); 
-  struct tm *tick_time = localtime(&temp);
-  
-  // Update the hands layer
-  layer_mark_dirty(s_hands_layer);
-}
-
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
-  update_time();
 }
 
 
@@ -189,28 +123,7 @@ static void init(void) {
         APP_LOG(APP_LOG_LEVEL_DEBUG, "No Phone Connection!");
   }
 
-  main_window_load();
-
-    // Create coordinate paths
-  // s_large_ticks = gpath_create(&LARGE_TICKS);
-  // s_small_ticks = gpath_create(&SMALL_TICKS);
-
-  // s_hour_hand = gpath_create(&HOUR_HAND);
-  // s_minute_hand = gpath_create(&MINUTE_HAND);
-
-  // // Center the coordinate paths
-  // GRect bounds = layer_get_bounds(window_get_root_layer (window));
-  // GPoint center = grect_center_point(&bounds);
-  // gpath_move_to(s_large_ticks, center);
-  // gpath_move_to(s_small_ticks, center);
-  // gpath_move_to(s_hour_hand, center);
-  // gpath_move_to(s_minute_hand, center);
-  
-  // Register with TickTimerService
-  tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
-  
-  // Update the initial time
-  update_time();
+  main_window_load();  
 
 }
 

@@ -1,15 +1,38 @@
 #include "clock_layer.h"
 
+
+// Coordinate Paths
+static GPath *s_large_ticks;
+static GPath *s_small_ticks;
+static GPath *s_hour_hand;
+static GPath *s_minute_hand;
+
+
 ClockLayer* clock_layer_create(const GRect frame){
 	ClockLayer *clock_layer = layer_create(frame);
 	layer_set_update_proc(clock_layer,dial_widget_layer_update);
-	layer_mark_dirty(clock_layer);
+
+  //Create coordinate paths
+  s_large_ticks = gpath_create(&LARGE_TICKS);
+  s_small_ticks = gpath_create(&SMALL_TICKS);
+
+  s_hour_hand = gpath_create(&HOUR_HAND);
+  s_minute_hand = gpath_create(&MINUTE_HAND);
+
+  // Center the coordinate paths
+  GPoint center = grect_center_point(&frame);
+  gpath_move_to(s_large_ticks, center);
+  gpath_move_to(s_small_ticks, center);
+  gpath_move_to(s_hour_hand, center);
+  gpath_move_to(s_minute_hand, center);
+  
 	return clock_layer;
 }
 
 void clock_layer_destroy(ClockLayer *clock_layer){
   layer_destroy(clock_layer);
 }
+
 
 static clock_layer_update(ClockLayer *clock_layer, GContext *ctx){
 
