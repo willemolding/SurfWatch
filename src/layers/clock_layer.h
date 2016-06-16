@@ -2,7 +2,7 @@
 
 #include <pebble.h>
 
-typedef ClockLayer Layer;
+typedef Layer ClockLayer;
 
 ClockLayer* clock_layer_create(const GRect frame);
 

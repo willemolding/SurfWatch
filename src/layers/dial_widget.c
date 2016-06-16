@@ -1,5 +1,6 @@
 #include "dial_widget.h"
 
+
 DialWidgetLayer* dial_widget_layer_create(const GRect frame){
 	DialWidgetLayer *dial_widget_layer = layer_create_with_data(frame, sizeof(DialWidgetData));
 	layer_set_update_proc(dial_widget_layer, dial_widget_layer_update);
@@ -16,7 +17,6 @@ static void dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContex
   DialWidgetData *data = (DialWidgetData*)layer_get_data(dial_widget_layer);
   uint16_t direction = data->direction;
   graphics_context_set_fill_color(ctx, GColorCobaltBlue);
-
 
   // draw the dial outline
   graphics_draw_arc(ctx, layer_get_frame(dial_widget_layer), GOvalScaleModeFitCircle, 0, TRIG_MAX_ANGLE);

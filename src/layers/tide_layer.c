@@ -1,13 +1,13 @@
 #include "tide_layer.h"
 
-TideLayer* dial_widget_layer_create(const GRect frame){
+TideLayer* tide_layer_create(const GRect frame){
 	TideLayer *tide_layer = layer_create(frame);
 	layer_set_update_proc(tide_layer,dial_widget_layer_update);
 	layer_mark_dirty(tide_layer);
 	return tide_layer;
 }
 
-void dial_widget_layer_destroy(TideLayer *tide_layer){
+void tide_layer_destroy(TideLayer *tide_layer){
   layer_destroy(tide_layer);
 }
 

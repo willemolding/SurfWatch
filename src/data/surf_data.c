@@ -1,6 +1,6 @@
 #include "surf_data.h"
 
-static void receive_surf_data(DictionaryIterator *iterator, void *context) {
+void receive_surf_data(DictionaryIterator *iterator, void *context) {
 
   SurfData *surf_data = (SurfData*)context;
 

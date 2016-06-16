@@ -24,10 +24,6 @@ static GPath *s_large_ticks;
 static GPath *s_small_ticks;
 static GPath *s_hour_hand;
 static GPath *s_minute_hand;
-/*
-static GPath *s_wind_ticks;
-static GPath *s_swell_ticks;
-*/
 
 // Textlayers
 static TextLayer *surf_label;
@@ -100,36 +96,26 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
  }
 
 static void update_display_data() {
-    time_t t = time(NULL);
-
-    // current_height = get_tide_at_time(&tide_data, t);
-    // int d1 = abs(current_height/100);
-    // int d2 = abs(current_height) - d1*100;
-
-    // //make sure the sign is right even for d1=0
-    // if(current_height>=0)
-    //   snprintf(height_text,10,"%d.%d%s",d1,d2, tide_data.unit);  
-    // else
-    //   snprintf(height_text,10,"-%d.%d%s",d1,d2, tide_data.unit);  
+    time_t t = time(NULL); 
 
     //update the star string
-    // for(uint16_t i = 0; i < MAX_SURF_RATING; i++){
-    //     if(i < surf_data.surf_rating){
-    //       if(i < surf_data.surf_rating - surf_data.wind_rating_penalty){
-    //         star_string[2*i + 1] = 'w';
-    //         star_string[2*i + 2] = ' ';
-    //       }
-    //       else{
-    //         star_string[2*i + 1] = 'o';
-    //         star_string[2*i + 2] = ' ';
-    //       }
+    for(uint16_t i = 0; i < MAX_SURF_RATING; i++){
+        if(i < surf_data.surf_rating){
+          if(i < surf_data.surf_rating - surf_data.wind_rating_penalty){
+            star_string[2*i + 1] = 'w';
+            star_string[2*i + 2] = ' ';
+          }
+          else{
+            star_string[2*i + 1] = 'o';
+            star_string[2*i + 2] = ' ';
+          }
 
-    //     }
-    //     else{
-    //       star_string[2*i + 1] = '\0';
-    //       star_string[2*i + 2] = '\0';
-    //     }
-    // }
+        }
+        else{
+          star_string[2*i + 1] = '\0';
+          star_string[2*i + 2] = '\0';
+        }
+    }
 
     //update the height string
     snprintf(wave_height_string, sizeof(wave_height_string), "%d-%d ", 
@@ -139,7 +125,6 @@ static void update_display_data() {
 
     text_layer_set_text(star_label, star_string);
     text_layer_set_text(tide_event_text_layer, height_text);
-    layer_mark_dirty(window_get_root_layer(window));
   
     text_layer_set_text(wind_units_label, surf_data.wind_units);
     text_layer_set_text(swell_units_label, surf_data.swell_units);
@@ -163,106 +148,20 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
 }
 
 
-// Update the three clock hands
-static void hands_update_proc(Layer *layer, GContext *ctx) {
-  GRect bounds = layer_get_bounds(window_get_root_layer (window));
-  GPoint center = grect_center_point(&bounds);
-  
-  // Get the current time
-  time_t now = time(NULL);
-  struct tm *t = localtime(&now);
-  
-  //TODO replace these with the dialWidget layer
-
-  // // Draw Wind Hand
-  // int wind_direction = surf_data.wind_direction;
-  // GRect wind_hand = GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 40, 40);
-  // graphics_context_set_fill_color(ctx, GColorCobaltBlue);
-  // graphics_fill_radial(ctx, wind_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(wind_direction - 15), DEG_TO_TRIGANGLE(wind_direction + 15));
-  
-  // // Draw Swell Hand
-  // int swell_direction = surf_data.swell_direction;
-  // GRect swell_hand = GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 40, 40);
-  // graphics_context_set_fill_color(ctx, GColorCobaltBlue);
-  // graphics_fill_radial(ctx, swell_hand, GOvalScaleModeFillCircle, 5, DEG_TO_TRIGANGLE(swell_direction - 15), DEG_TO_TRIGANGLE(swell_direction + 15));
-  
-  const int hand_stroke_width = 2;
-  graphics_context_set_stroke_color(ctx, GColorBlack);
-  graphics_context_set_stroke_width(ctx, hand_stroke_width);
-
-  int hour_angle = (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6);
-  int minute_angle = TRIG_MAX_ANGLE * t->tm_min / 60;
-
-  hand_update_radius(hour_angle, bounds, 2, &HOUR_HAND);
-  hand_update_radius(minute_angle, bounds, 1, &MINUTE_HAND);
-  
-  // Draw hour hand
-  gpath_rotate_to(s_hour_hand, hour_angle);
-  gpath_draw_outline(ctx, s_hour_hand);
-  
-  // Draw minute hand
-  gpath_rotate_to(s_minute_hand, minute_angle);
-  gpath_draw_outline(ctx, s_minute_hand);
-  
-  const int hand_fill_width = 6;
-  graphics_context_set_stroke_width(ctx, hand_fill_width);
-  
-  GPoint minute_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, TRIG_MAX_ANGLE * t->tm_min / 60);
-  graphics_draw_line(ctx, center, minute_hand_fill);
-  
-  GPoint hour_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
-  graphics_draw_line(ctx, center, hour_hand_fill);
-  
-}
-
-static void canvas_update_proc(Layer *this_layer, GContext *ctx) {
-  
-  GRect bounds = layer_get_bounds(window_get_root_layer (window));
-  
-  // Draw large ticks
-  for (int c = 0; c < 4; c++){
-    #if defined(PBL_BW)
-      graphics_context_set_stroke_color(ctx, GColorBlack);
-    #elif defined(PBL_COLOR)
-      graphics_context_set_stroke_color(ctx, GColorBlack);
-    #endif
-    gpath_rotate_to(s_large_ticks, ((TRIG_MAX_ANGLE/4) * c ) + (TRIG_MAX_ANGLE/2));
-    gpath_draw_outline(ctx, s_large_ticks);
-  }
-  
-  // Draw small ticks
-  for (int c = 1; c < 12; c++){
-    #if defined(PBL_BW)
-      graphics_context_set_fill_color(ctx, GColorBlack);
-      graphics_context_set_stroke_color(ctx, GColorBlack);
-    #elif defined(PBL_COLOR)
-      graphics_context_set_fill_color(ctx, GColorBlack);
-      graphics_context_set_stroke_color(ctx, GColorBlack);
-    #endif
-    if((c != 3) || (c != 6) || (c != 6)){
-      gpath_rotate_to(s_small_ticks, ((TRIG_MAX_ANGLE/12) * c ) + (TRIG_MAX_ANGLE/2));
-      gpath_draw_outline(ctx, s_small_ticks);
-    }
-  }
-  
-  graphics_fill_radial(ctx, GRect((bounds.size.w / 2) - 3, (bounds.size.h / 2) - 3, 5, 5), GOvalScaleModeFitCircle, 5, 0, TRIG_MAX_ANGLE);
-  
-}
-
 
 static void destroy_layers(){
-  layer_destroy(wave_layer);
-  text_layer_destroy(tide_event_text_layer);
+  // layer_destroy(wave_layer);
+  // text_layer_destroy(tide_event_text_layer);
 
-  // Destroy Layers
-  layer_destroy(s_canvas_layer);
-  layer_destroy(s_hands_layer);
-  text_layer_destroy(surf_label);
-  text_layer_destroy(star_label);
+  // // Destroy Layers
+  // layer_destroy(s_canvas_layer);
+  // layer_destroy(s_hands_layer);
+  // text_layer_destroy(surf_label);
+  // text_layer_destroy(star_label);
   
-  // Destroy fonts
-  fonts_unload_custom_font(s_surf_font_24);
-  fonts_unload_custom_font(s_symbol_font_18);
+  // // Destroy fonts
+  // fonts_unload_custom_font(s_surf_font_24);
+  // fonts_unload_custom_font(s_symbol_font_18);
 }
 
 // Function to update the time
@@ -282,13 +181,6 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
 static void init(void) {
 
-  // Create coordinate paths
-  s_large_ticks = gpath_create(&LARGE_TICKS);
-  s_small_ticks = gpath_create(&SMALL_TICKS);
-
-  s_hour_hand = gpath_create(&HOUR_HAND);
-  s_minute_hand = gpath_create(&MINUTE_HAND);
-
   app_message_register_inbox_received(inbox_received_callback);
   app_message_register_inbox_dropped(inbox_dropped_callback);
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
@@ -299,13 +191,20 @@ static void init(void) {
 
   main_window_load();
 
-  // Center the coordinate paths
-  GRect bounds = layer_get_bounds(window_get_root_layer (window));
-  GPoint center = grect_center_point(&bounds);
-  gpath_move_to(s_large_ticks, center);
-  gpath_move_to(s_small_ticks, center);
-  gpath_move_to(s_hour_hand, center);
-  gpath_move_to(s_minute_hand, center);
+    // Create coordinate paths
+  // s_large_ticks = gpath_create(&LARGE_TICKS);
+  // s_small_ticks = gpath_create(&SMALL_TICKS);
+
+  // s_hour_hand = gpath_create(&HOUR_HAND);
+  // s_minute_hand = gpath_create(&MINUTE_HAND);
+
+  // // Center the coordinate paths
+  // GRect bounds = layer_get_bounds(window_get_root_layer (window));
+  // GPoint center = grect_center_point(&bounds);
+  // gpath_move_to(s_large_ticks, center);
+  // gpath_move_to(s_small_ticks, center);
+  // gpath_move_to(s_hour_hand, center);
+  // gpath_move_to(s_minute_hand, center);
   
   // Register with TickTimerService
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
