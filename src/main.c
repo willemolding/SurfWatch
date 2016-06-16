@@ -6,7 +6,6 @@
 
 static SurfData surf_data;
 
-
 static void inbox_received_callback(DictionaryIterator *iter, void *context) {
   receive_surf_data(iter, context);
   // update_display_data();
@@ -19,13 +18,20 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
 
 static void init(void) {
 
-  app_message_register_inbox_received(inbox_received_callback);
-  app_message_register_inbox_dropped(inbox_dropped_callback);
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  // app_message_register_inbox_received(inbox_received_callback);
+  // app_message_register_inbox_dropped(inbox_dropped_callback);
+  // app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
   if(!bluetooth_connection_service_peek()){
         APP_LOG(APP_LOG_LEVEL_DEBUG, "No Phone Connection!");
   }
+
+  // testing data
+  surf_data.solid_rating = 1;
+  surf_data.faded_rating = 2;
+  surf_data.min_surf_height = 1;
+  surf_data.max_surf_height = 2;
+  strcpy(surf_data.swell_units, "ft");
 
   main_window_push(&surf_data);  
 
