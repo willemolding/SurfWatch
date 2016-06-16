@@ -27,11 +27,18 @@ static void init(void) {
   }
 
   // testing data
+  surf_data.swell.direction = 90;
+  surf_data.swell.magnitude = 3;
+  strcpy(surf_data.swell_units, "ft");
+
+  surf_data.wind.direction = 280;
+  surf_data.wind.magnitude = 11;
+  strcpy(surf_data.wind_units, "kts");
+
   surf_data.solid_rating = 1;
   surf_data.faded_rating = 2;
   surf_data.min_surf_height = 1;
   surf_data.max_surf_height = 2;
-  strcpy(surf_data.swell_units, "ft");
 
   main_window_push(&surf_data);  
 

@@ -15,13 +15,13 @@ typedef Layer DialWidgetLayer;
 
 typedef struct {
 	char *units;
-	Vector vec;
+	Vector *vec;
 } DialWidgetData;
 
-DialWidgetLayer* dial_widget_layer_create(const GRect frame);
+DialWidgetLayer* dial_widget_layer_create(GRect frame);
 
 void dial_widget_layer_destroy(DialWidgetLayer *dial_widget_layer);
 
-void dial_widget_set_unit(DialWidgetLayer *dial_widget_layer, char *units);
+void dial_widget_layer_set_unit(DialWidgetLayer *dial_widget_layer, char *units);
 
-void dial_widget_set_vector(DialWidgetLayer *dial_widget_layer, Vector vec);
+void dial_widget_layer_set_vector(DialWidgetLayer *dial_widget_layer, Vector *vec);

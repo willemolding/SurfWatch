@@ -47,8 +47,7 @@ static void update_display_data() {
     snprintf(wave_height_string, MAX_WAVE_STRING*sizeof(char), "%u-%u %s", 
       surf_data->min_surf_height, surf_data->max_surf_height, surf_data->swell_units);
 
-    
-}
+  }
 
 
 static void window_load(Window *window) {
@@ -74,6 +73,20 @@ static void window_load(Window *window) {
   text_layer_set_font(star_label, s_symbol_font_18);
   text_layer_set_text_alignment(star_label, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(star_label));
+
+  //add the wind dial widget
+  wind_dial = dial_widget_layer_create(GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 50, 50));
+
+  dial_widget_layer_set_vector(wind_dial, &surf_data->wind);
+  dial_widget_layer_set_unit(wind_dial, surf_data->wind_units);
+  layer_add_child(window_layer, wind_dial);
+
+  //add the wind dial widget
+  swell_dial = dial_widget_layer_create(GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 50, 50));
+  dial_widget_layer_set_vector(swell_dial, &surf_data->swell);
+  dial_widget_layer_set_unit(swell_dial, surf_data->swell_units);
+  layer_add_child(window_layer, swell_dial);
+
 
   clock_layer = clock_layer_create(bounds);
   layer_add_child(window_layer, clock_layer);
