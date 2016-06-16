@@ -1,7 +1,4 @@
 #include "main_window.h"
-#include "../data/surf_data.h"
-#include "../layers/dial_widget.h"
-#include "../layers/clock_layer.h"
 
 #define MAX_STAR_STRING 20
 #define MAX_WAVE_STRING 20
@@ -14,7 +11,7 @@ static SurfData *surf_data;
 //speical layers
 static ClockLayer *clock_layer;
 static DialWidgetLayer *wind_dial, *swell_dial;
-// static TideLayer *tide_layer;
+static TideLayer *tide_layer;
 
 // Textlayers
 static TextLayer *surf_label;
@@ -46,7 +43,6 @@ static void update_display_data() {
     // Do the surf height string
     snprintf(wave_height_string, MAX_WAVE_STRING*sizeof(char), "%u-%u %s", 
       surf_data->min_surf_height, surf_data->max_surf_height, surf_data->swell_units);
-
   }
 
 
@@ -76,18 +72,21 @@ static void window_load(Window *window) {
 
   //add the wind dial widget
   wind_dial = dial_widget_layer_create(GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 50, 50));
-
   dial_widget_layer_set_vector(wind_dial, &surf_data->wind);
   dial_widget_layer_set_unit(wind_dial, surf_data->wind_units);
   layer_add_child(window_layer, wind_dial);
 
-  //add the wind dial widget
+  //add the swell dial widget
   swell_dial = dial_widget_layer_create(GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 50, 50));
   dial_widget_layer_set_vector(swell_dial, &surf_data->swell);
   dial_widget_layer_set_unit(swell_dial, surf_data->swell_units);
   layer_add_child(window_layer, swell_dial);
 
+  //add the tide layer
+  tide_layer = tide_layer_create(GRect(0, 3*bounds.size.h/4, bounds.size.w, bounds.size.h/4));
+  layer_add_child(window_layer, tide_layer);
 
+  //add the clock layer
   clock_layer = clock_layer_create(bounds);
   layer_add_child(window_layer, clock_layer);
 

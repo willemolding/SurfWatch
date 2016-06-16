@@ -1,5 +1,4 @@
 #include <pebble.h>
-#include "tick_path.h"
 
 #include "data/surf_data.h"
 #include "windows/main_window.h"

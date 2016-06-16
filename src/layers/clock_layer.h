@@ -1,6 +1,8 @@
 #pragma once
 
 #include <pebble.h>
+#include "tick_path.h"
+
 
 typedef Layer ClockLayer;
 

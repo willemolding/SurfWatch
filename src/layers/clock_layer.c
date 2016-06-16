@@ -1,5 +1,4 @@
 #include "clock_layer.h"
-#include "tick_path.h"
 
 // Coordinate Paths
 static GPath *s_large_ticks;
