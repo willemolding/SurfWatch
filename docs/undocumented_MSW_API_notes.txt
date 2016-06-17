@@ -1,0 +1,34 @@
+The magic seaweed API does not list all its functioanlity on its documentation page. Here are some additional features I have found through experimentation
+
+
+
+
+##Spot API##
+
+It is possible to look up spots near a lat-lon position using the API. You can do this using the /spot api
+
+http://magicseaweed.com/api/"+msw_key+"/spot
+
+This accepts the following parameter that I know of:
+- lat //(required)
+- lon //(required)
+- fields //limit the fields to return
+
+It will return a json listing the details of all nearby spots
+
+
+
+
+##Tide API##
+
+MSW also has a pretty good tide API
+
+http://magicseaweed.com/api/"+msw_key+"/tide/
+
+That accepts the following parameters
+
+- spot_id // (required)
+- start // UTC timestamp for the start of the data
+- end // UTC timstamp for the end of the data
+
+It returns a JSON with a bunch of tide events split in to days. It also include sun rise and sun set times. All times are given as UTC.

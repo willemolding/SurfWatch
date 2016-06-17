@@ -14,7 +14,7 @@ static void tide_layer_update(TideLayer *tide_layer, GContext *ctx){
   int display_cycles = 1;
   int tick_marker_pos = w / 3;
 
-  time_t now = 1466047530; //current time in UTC epoch
+  time_t now = time(NULL); //current time in UTC epoch
 
   // check that one or both of the tide events are still to come. If not draw nothing
     // assume events are sorted and find the next

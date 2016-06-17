@@ -7,7 +7,6 @@ static SurfData surf_data;
 
 static void inbox_received_callback(DictionaryIterator *iter, void *context) {
   receive_surf_data(iter, context);
-  // update_display_data();
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
@@ -42,7 +41,7 @@ static void init(void) {
   TidePoint tide_points[2] = { {.time = 1466123182, .height = 15, .state = 0},
                             {.time = 1466143710, .height = 102, .state = 1} };
   memcpy(surf_data.tide_points, tide_points, sizeof(tide_points));
-  
+
 
   strcpy(surf_data.tide_units, "kts");
 
