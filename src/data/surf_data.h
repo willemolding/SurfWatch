@@ -9,7 +9,7 @@
 #define N_TIDE_POINTS 2
 
 typedef struct TidePoint{
-    uint16_t time; //time is stored as a utc timestamp
+    time_t time; //time is stored as a utc timestamp
     int16_t height; //height is stored as the decimal height multiplied by 100 e.g. 1.13 is stored as 113
     uint8_t state;
 } TidePoint;

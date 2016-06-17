@@ -8,7 +8,15 @@
 
 typedef Layer TideLayer;
 
+typedef struct TideLayerData {
+	TidePoint *points;
+	uint16_t n_points;
+} TideLayerData;
+
+
 TideLayer* tide_layer_create(const GRect frame);
 
 void tide_layer_destroy(TideLayer *tide_layer);
+
+void tide_layer_set_data(TideLayer *tide_layer, TidePoint *points, uint16_t n_points);
 

@@ -39,6 +39,13 @@ static void init(void) {
   surf_data.min_surf_height = 1;
   surf_data.max_surf_height = 2;
 
+  TidePoint tide_points[2] = { {.time = 1466123182, .height = 15, .state = 0},
+                            {.time = 1466143710, .height = 102, .state = 1} };
+  memcpy(surf_data.tide_points, tide_points, sizeof(tide_points));
+  
+
+  strcpy(surf_data.tide_units, "kts");
+
   main_window_push(&surf_data);  
 
 }
