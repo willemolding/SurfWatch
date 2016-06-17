@@ -84,7 +84,8 @@ static void window_load(Window *window) {
 
   //add the tide layer
   tide_layer = tide_layer_create(GRect(0, 3*bounds.size.h/4, bounds.size.w, bounds.size.h/4));
-  tide_layer_set_data(tide_layer, surf_data->tide_points, N_TIDE_POINTS);
+  tide_layer_set_points(tide_layer, surf_data->tide_points, N_TIDE_POINTS);
+  tide_layer_set_units(tide_layer, surf_data->tide_units);
   layer_add_child(window_layer, tide_layer);
 
   //add the clock layer

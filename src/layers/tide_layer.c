@@ -44,6 +44,8 @@ static void tide_layer_update(TideLayer *tide_layer, GContext *ctx){
                                GPoint(tick_marker_pos, h));
         graphics_draw_circle(ctx,GPoint(tick_marker_pos, 2),2);
 
+        //draw the current height
+
         break;
       }
     }
@@ -64,10 +66,16 @@ void tide_layer_destroy(TideLayer *tide_layer){
   layer_destroy(tide_layer);
 }
 
-void tide_layer_set_data(TideLayer *tide_layer, TidePoint *points, uint16_t n_points){
+void tide_layer_set_points(TideLayer *tide_layer, TidePoint *points, uint16_t n_points){
   TideLayerData* data = (TideLayerData*)layer_get_data(tide_layer);
   data->points = points;
   data->n_points = n_points;
 }
+
+void tide_layer_set_units(TideLayer *tide_layer, char *units){
+    TideLayerData* data = (TideLayerData*)layer_get_data(tide_layer);
+    data->units = units;
+}
+
 
 

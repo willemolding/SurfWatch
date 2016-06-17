@@ -43,7 +43,7 @@ static void init(void) {
   memcpy(surf_data.tide_points, tide_points, sizeof(tide_points));
 
 
-  strcpy(surf_data.tide_units, "kts");
+  strcpy(surf_data.tide_units, "m");
 
   main_window_push(&surf_data);  
 

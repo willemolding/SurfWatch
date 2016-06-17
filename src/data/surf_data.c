@@ -81,3 +81,33 @@ void receive_surf_data(DictionaryIterator *iterator, void *context) {
   }
 
 }
+
+
+int16_t get_tide_at_time(time_t t, TidePoint *tide_points, int n_points){
+  // first locate the tide events occuring before and after the time
+  int t1=-1,t2=-1,h1=0,h2=0;
+
+  for(int i=1; i < n_points; i++){
+
+    if(tide_points[i-1].time < t && tide_points[i].time > t){
+      t1 = tide_points[i-1].time;
+      t2 = tide_points[i].time;
+      h1 = tide_points[i-1].height;
+      h2 = tide_points[i].height;
+    }
+  }
+
+  //if it couldn't be found then the data is not current
+  if(t1 < 0){
+    return -9999;
+  }
+
+  // Using these calculate the current height using a fitted cosing approximation
+
+  int A = TRIG_MAX_ANGLE * ((float)(t - t1) / (t2 - t1) + 1) / 2;
+
+  int16_t h = h1 + (h2 - h1) * ((float)cos_lookup(A) / TRIG_MAX_RATIO + 1.0) / 2;
+
+  return h;
+
+}
