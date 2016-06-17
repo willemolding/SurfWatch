@@ -95,7 +95,13 @@ static void window_load(Window *window) {
   update_display_data();
 }
 
-static void window_unload(Window *window) {
+void window_unload(Window *window) {
+  text_layer_destroy(surf_label);
+  text_layer_destroy(star_label);
+  dial_widget_layer_destroy(wind_dial);
+  dial_widget_layer_destroy(swell_dial);
+  tide_layer_destroy(tide_layer);
+  clock_layer_destroy(clock_layer);
   window_destroy(window);
 }
 

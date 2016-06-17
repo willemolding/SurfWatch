@@ -16,9 +16,9 @@ static void inbox_dropped_callback(AppMessageResult reason, void *context) {
 
 static void init(void) {
 
-  // app_message_register_inbox_received(inbox_received_callback);
-  // app_message_register_inbox_dropped(inbox_dropped_callback);
-  // app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  app_message_register_inbox_received(inbox_received_callback);
+  app_message_register_inbox_dropped(inbox_dropped_callback);
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
   if(!bluetooth_connection_service_peek()){
         APP_LOG(APP_LOG_LEVEL_DEBUG, "No Phone Connection!");
@@ -50,7 +50,6 @@ static void init(void) {
 }
 
 static void deinit(void) {
-  //TODO: add cleanup code
 }
 
 int main(void) {
