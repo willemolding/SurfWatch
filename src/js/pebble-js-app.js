@@ -1,6 +1,6 @@
 const config_page_url = "http://localhost:8000/"
 
-const msw_key = "4fa1b1a1cb45e3ade0ee1fe7560ff2ee";
+const msw_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
 const msw_forecast_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
 const msw_tide_url = "http://magicseaweed.com/api/"+msw_key+"/tide/";
 
@@ -12,8 +12,9 @@ const locationOptions = {
 
 var spot_id = null;
 
-function send_pebble_message(message) {
-	Pebble.sendAppMessage(message,
+function send_pebble_message(msg) {
+	console.log("Message being sent is:\n"+JSON.stringify(msg));
+	Pebble.sendAppMessage(msg,
 		function(e) {
 		console.log('Send successful.');
 		},
@@ -24,9 +25,7 @@ function send_pebble_message(message) {
 }
 
 
-var message = {}
-
-function add_forecast_data_to_message(response){
+function add_forecast_data_to_message(response, message){
 	message['SOLID_RATING'] = response.solidRating;
 	message['FADED_RATING'] = response.fadedRating;
 
@@ -40,18 +39,22 @@ function add_forecast_data_to_message(response){
 
 	message['MIN_SURF_HEIGHT'] = response.swell.minBreakingHeight;
 	message['MAX_SURF_HEIGHT'] = response.swell.maxBreakingHeight;
+
+	return message;
 }
 
-function add_tide_data_to_message(response) {
-	message['TIDE_UNITS'] = response.unit
+function add_tide_data_to_message(response, message) {
+	message['TIDE_UNITS'] = response.unit;
 
-	message['TIDE_1_TIME'] = response.tide[0].timestamp
-	message['TIDE_1_HEIGHT'] = response.tide[0].shift
-	message['TIDE_1_STATE'] = response.tide[0].state
+	message['TIDE_1_TIME'] = response.tide[0].timestamp;
+	message['TIDE_1_HEIGHT'] = parseInt(response.tide[0].shift * 100);
+	message['TIDE_1_STATE'] = response.tide[0].state == "High" ? 1 : 0;
 
-	message['TIDE_2_TIME'] = response.tide[1].timestamp
-	message['TIDE_2_HEIGHT'] = response.tide[1].shift
-	message['TIDE_2_STATE'] =response.tide[1].state
+	message['TIDE_2_TIME'] = response.tide[1].timestamp;
+	message['TIDE_2_HEIGHT'] = parseInt(response.tide[1].shift*100);
+	message['TIDE_2_STATE'] =response.tide[1].state == "High" ? 1 : 0;
+
+	return message;
 }
 
 
@@ -87,23 +90,30 @@ function make_request(url, success_callback) {
 function data_update_event(){
 
 	console.log('Loading surf data...');
+	var message = {}
+
+
 	if(spot_id){
 		//make the forecase request
 		make_request(msw_forecast_url+'?spot_id='+spot_id, 
 			function(request) {
 			var data = JSON.parse(request.responseText);
-			add_forecast_data_to_message(data[0]);
-		});
+			console.log("data returned is: \n" + JSON.stringify(data[0]))
+			message = add_forecast_data_to_message(data[0], message);
 
-		//make the tide request
-		make_request(msw_tide_url+'?spot_id='+spot_id, 
+			//make the tide request
+			make_request(msw_tide_url+'?spot_id='+spot_id, 
 			function(request) {
 			var data = JSON.parse(request.responseText);
-			add_tide_data_to_message(data[0]);
+			message = add_tide_data_to_message(data[0], message);
+
+			send_pebble_message(message);
+
+			});
 		});
 
-		//whatever we receive to the watch
-		send_pebble_message(message);
+
+
 	}
 	else{
 		console.log("Could not make request. No Spot ID stored.");
@@ -120,6 +130,9 @@ Pebble.addEventListener("ready", function(e) {
 		Pebble.showSimpleNotificationOnPebble("Please Open Config", 
 			"You have not yet selected a location. Please open the configuration page.");
 		console.log("No spot ID stored. User must open config.");
+	}
+	else{
+		console.log("Loaded stored spot ID: "+spot_id);
 	}
 
 	data_update_event();
@@ -151,7 +164,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
 
 	var returned_spot_id = decodeURIComponent(e.response);
 
-	console.log(returned_spot_id);
+	console.log("retured spot ID was: "+returned_spot_id);
 
 	// if a spot_id was returned then store it
 	if(returned_spot_id){

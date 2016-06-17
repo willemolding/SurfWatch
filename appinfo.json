@@ -59,7 +59,6 @@
     "sdkVersion": "3",
     "shortName": "SurfWatch",
     "targetPlatforms": [
-        "basalt",
         "chalk"
     ],
     "uuid": "c54d0be0-5923-4027-b6ed-5e4d8d7202b5",
