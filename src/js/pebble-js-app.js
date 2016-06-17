@@ -105,6 +105,9 @@ function data_update_event(){
 		//whatever we receive to the watch
 		send_pebble_message(message);
 	}
+	else{
+		console.log("Could not make request. No Spot ID stored.");
+	}
 }
 
 
@@ -116,6 +119,7 @@ Pebble.addEventListener("ready", function(e) {
 	if(!spot_id) {
 		Pebble.showSimpleNotificationOnPebble("Please Open Config", 
 			"You have not yet selected a location. Please open the configuration page.");
+		console.log("No spot ID stored. User must open config.");
 	}
 
 	data_update_event();
@@ -154,7 +158,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
 		spot_id = returned_spot_id;
 		localStorage.setItem("spot_id", spot_id);
 		//trigger an update
-		date_update_event();
+		data_update_event();
 	}
 });
 
