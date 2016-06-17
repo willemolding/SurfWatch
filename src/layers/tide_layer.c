@@ -27,12 +27,14 @@ static void tide_layer_update(TideLayer *tide_layer, GContext *ctx){
         int period = data->points[1].time - data->points[0].time;
         int phase_offset = TRIG_MAX_ANGLE * (next_tide_event_time - now) / period; 
 
+        int amp = data->points[i].state == LOW ? -1 : +1;
+
         //draw a line for every pixel width
         graphics_context_set_stroke_color(ctx,GColorPictonBlue);    
 
         for(int i = 0; i < w; i++){
           int32_t c = (i - tick_marker_pos) * display_cycles * TRIG_MAX_ANGLE / w;
-          int32_t a = h * (TRIG_MAX_RATIO - cos_lookup(c + phase_offset)) / (2 * TRIG_MAX_RATIO);
+          int32_t a = amp * h * (TRIG_MAX_RATIO - cos_lookup(c + phase_offset)) / (2 * TRIG_MAX_RATIO);
           graphics_draw_line(ctx, GPoint(i, h),
                                   GPoint(i, a));
         }

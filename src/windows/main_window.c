@@ -106,6 +106,7 @@ void window_unload(Window *window) {
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
+  layer_mark_dirty(tide_layer);
   layer_mark_dirty(clock_layer);
 }
 

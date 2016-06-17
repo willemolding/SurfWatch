@@ -26,7 +26,7 @@ void receive_surf_data(DictionaryIterator *iterator, SurfData *surf_data) {
         surf_data->tide_points[0].height = tuple->value->int16;
         break;
       case TIDE_1_STATE:
-        surf_data->tide_points[0].state = tuple->value->uint8;
+        surf_data->tide_points[0].state = (ETideState)tuple->value->uint8;
         break;
       case TIDE_2_TIME:
         surf_data->tide_points[1].time = tuple->value->uint16;
@@ -35,7 +35,7 @@ void receive_surf_data(DictionaryIterator *iterator, SurfData *surf_data) {
         surf_data->tide_points[1].height = tuple->value->int16;
         break;
       case TIDE_2_STATE:
-        surf_data->tide_points[1].state = tuple->value->uint8;
+        surf_data->tide_points[1].state = (ETideState)tuple->value->uint8;
         break;
 
         //surf message data

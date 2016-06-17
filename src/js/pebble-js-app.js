@@ -46,6 +46,13 @@ function add_forecast_data_to_message(response, message){
 function add_tide_data_to_message(response, message) {
 	message['TIDE_UNITS'] = response.unit;
 
+	//only use the two tide events closest to the current time
+	var current_timestamp = Math.floor(Date.now() / 1000);
+
+	for(var i = 1; i < response.length; i++){
+		
+	}
+
 	message['TIDE_1_TIME'] = response.tide[0].timestamp;
 	message['TIDE_1_HEIGHT'] = Math.round(response.tide[0].shift * 100);
 	message['TIDE_1_STATE'] = response.tide[0].state == "High" ? 1 : 0;
@@ -98,11 +105,12 @@ function data_update_event(){
 		make_request(msw_forecast_url+'?spot_id='+spot_id, 
 			function(request) {
 			var data = JSON.parse(request.responseText);
-			console.log("data returned is: \n" + JSON.stringify(data[0]))
+			console.log("data returned is: \n" + JSON.stringify(data[0]));
 			message = add_forecast_data_to_message(data[0], message);
 
 			//make the tide request
-			make_request(msw_tide_url+'?spot_id='+spot_id, 
+			var current_timestamp = Math.floor(Date.now() / 1000);
+			make_request(msw_tide_url+'?spot_id='+spot_id+'&start='+current_timestamp, 
 			function(request) {
 			var data = JSON.parse(request.responseText);
 			message = add_tide_data_to_message(data[0], message);
