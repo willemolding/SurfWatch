@@ -6,7 +6,8 @@
 static SurfData surf_data;
 
 static void inbox_received_callback(DictionaryIterator *iter, void *context) {
-  receive_surf_data(iter, context);
+  receive_surf_data(iter, &surf_data);
+  main_window_refresh();
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {

@@ -1,8 +1,6 @@
 #include "surf_data.h"
 
-void receive_surf_data(DictionaryIterator *iterator, void *context) {
-
-  SurfData *surf_data = (SurfData*)context;
+void receive_surf_data(DictionaryIterator *iterator, SurfData *surf_data) {
 
   // incoming message received
   APP_LOG(APP_LOG_LEVEL_DEBUG, "Message was received");
@@ -79,6 +77,9 @@ void receive_surf_data(DictionaryIterator *iterator, void *context) {
 
     tuple = dict_read_next(iterator);
   }
+
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Message was decoded successfully");
+
 
 }
 

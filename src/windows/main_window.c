@@ -124,3 +124,8 @@ void main_window_push(SurfData *data) {
   window_stack_push(window, true);
 
 }
+
+void main_window_refresh(){
+    update_display_data();
+    layer_mark_dirty(window_get_root_layer(window));
+}

@@ -7,3 +7,5 @@
 #include "../layers/tide_layer.h"
 
 void main_window_push(SurfData *surf_data);
+
+void main_window_refresh();

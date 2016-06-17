@@ -47,11 +47,11 @@ function add_tide_data_to_message(response, message) {
 	message['TIDE_UNITS'] = response.unit;
 
 	message['TIDE_1_TIME'] = response.tide[0].timestamp;
-	message['TIDE_1_HEIGHT'] = parseInt(response.tide[0].shift * 100);
+	message['TIDE_1_HEIGHT'] = Math.round(response.tide[0].shift * 100);
 	message['TIDE_1_STATE'] = response.tide[0].state == "High" ? 1 : 0;
 
 	message['TIDE_2_TIME'] = response.tide[1].timestamp;
-	message['TIDE_2_HEIGHT'] = parseInt(response.tide[1].shift*100);
+	message['TIDE_2_HEIGHT'] = Math.round(response.tide[1].shift*100);
 	message['TIDE_2_STATE'] =response.tide[1].state == "High" ? 1 : 0;
 
 	return message;

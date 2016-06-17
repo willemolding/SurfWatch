@@ -64,7 +64,7 @@ enum {
 
 //Accepts an app message containing a JSON defined surf_data struct
 //stores it in the context which must be a SurfData*
-void receive_surf_data(DictionaryIterator *iterator, void *context);
+void receive_surf_data(DictionaryIterator *iterator, SurfData *surf_data);
 
 int16_t get_tide_at_time(time_t t, TidePoint *tide_points, int n_points);
 
