@@ -1,4 +1,5 @@
-const config_page_url = "http://localhost:8000/"
+// const config_page_url = "http://localhost:8000/"
+const config_page_url = "http://schli.tt/surfwatch";
 
 const msw_key = "qG507rwB78RM89nmo25rfgtvAZ1M3c4W";
 const msw_forecast_url = "http://magicseaweed.com/api/"+msw_key+"/forecast/";
@@ -135,7 +136,7 @@ Pebble.addEventListener("ready", function(e) {
 	spot_id = localStorage.getItem('spot_id');
 
 	if(!spot_id) {
-		Pebble.showSimpleNotificationOnPebble("Please Open Config", 
+		// Pebble.showSimpleNotificationOnPebble("Please Open Config", 
 			"You have not yet selected a location. Please open the configuration page.");
 		console.log("No spot ID stored. User must open config.");
 	}

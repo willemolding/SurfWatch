@@ -90,6 +90,8 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
   graphics_draw_line(ctx, center, hour_hand_fill);
 
   // Draw large ticks
+  const int large_ticks_stroke_width = 4;
+  graphics_context_set_stroke_width(ctx, large_ticks_stroke_width);
   for (int c = 0; c < 4; c++){
     #if defined(PBL_BW)
       graphics_context_set_stroke_color(ctx, GColorBlack);
@@ -101,6 +103,8 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
   }
   
   // Draw small ticks
+  const int small_ticks_stroke_width = 3;
+  graphics_context_set_stroke_width(ctx, small_ticks_stroke_width);
   for (int c = 1; c < 12; c++){
     #if defined(PBL_BW)
       graphics_context_set_fill_color(ctx, GColorBlack);
