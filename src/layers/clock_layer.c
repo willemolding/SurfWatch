@@ -3,57 +3,8 @@
 // Coordinate Paths
 static GPath *s_large_ticks;
 static GPath *s_small_ticks;
-static GPath *s_hour_hand;
-static GPath *s_minute_hand;
 
-static float my_sqrt(const float num) {
-  const uint MAX_STEPS = 40;
-  const float MAX_ERROR = 0.001;
-  
-  float answer = num;
-  float ans_sqr = answer * answer;
-  uint step = 0;
-  while((ans_sqr - num > MAX_ERROR) && (step++ < MAX_STEPS)) {
-    answer = (answer + (num / answer)) / 2;
-    ans_sqr = answer * answer;
-  }
-  return answer;
-}
-
-static float getRadius(int a, int b, int theta) {
-     float s = (float)sin_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
-     float c = (float)cos_lookup(DEG_TO_TRIGANGLE(theta))/TRIG_MAX_RATIO;
-     return (a * b) / (my_sqrt((a*a)*(s*s)+(b*b)*(c*c)));
-}
-
-static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *info){
-  int b = bounds.size.w;
-  int a = bounds.size.h;
-  
-  float value = (getRadius(a, b, theta)) / 2;
-  
-  int max = (int)value - 8;
-  if(hand == 2){
-    max = max / 2;
-  }
-  int min;
-  if(max >= 0){
-    max = (max * (-1));
-    min = max + 5;
-  } else {
-    max = (max * (-1));
-    min = max - 5;
-  }
-  
-  info->points[2].y = min;
-  info->points[3].y = max;
-  info->points[4].y = max;
-  info->points[5].y = min;
-  
- }
-
-
- static void clock_layer_update(ClockLayer *clock_layer, GContext *ctx){
+static void clock_layer_update(ClockLayer *clock_layer, GContext *ctx){
 
   GRect bounds = layer_get_bounds(clock_layer);
   GPoint center = grect_center_point(&bounds);
@@ -65,30 +16,34 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
   const int hand_stroke_width = 2;
   graphics_context_set_stroke_color(ctx, GColorBlack);
   graphics_context_set_stroke_width(ctx, hand_stroke_width);
-
-  int hour_angle = (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6);
-  int minute_angle = TRIG_MAX_ANGLE * t->tm_min / 60;
-
-  hand_update_radius(hour_angle, bounds, 2, &HOUR_HAND);
-  hand_update_radius(minute_angle, bounds, 1, &MINUTE_HAND);
   
-  // Draw hour hand
-  gpath_rotate_to(s_hour_hand, hour_angle);
-  gpath_draw_outline(ctx, s_hour_hand);
-  
-  // Draw minute hand
-  gpath_rotate_to(s_minute_hand, minute_angle);
-  gpath_draw_outline(ctx, s_minute_hand);
-  
-  const int hand_fill_width = 6;
+  // Draw the minute hand
+  const int hand_fill_width = 3;
   graphics_context_set_stroke_width(ctx, hand_fill_width);
-  
-  GPoint minute_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, TRIG_MAX_ANGLE * t->tm_min / 60);
+  GPoint minute_hand_fill = gpoint_from_polar(GRect(20, 20, bounds.size.w - 40, bounds.size.w - 40), GOvalScaleModeFitCircle, TRIG_MAX_ANGLE * t->tm_min / 60);
   graphics_draw_line(ctx, center, minute_hand_fill);
   
-  GPoint hour_hand_fill = gpoint_from_polar(GRect((bounds.size.w / 2) - 8, (bounds.size.h / 2) - 8, 17, 17), GOvalScaleModeFitCircle, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  // Draw the hour hand
+  graphics_context_set_stroke_width(ctx, hand_fill_width);
+  GPoint second_hand_fill = gpoint_from_polar(GRect(40, 40, bounds.size.w - 80, bounds.size.w - 80), GOvalScaleModeFitCircle, TRIG_MAX_ANGLE * t->tm_hour / 60);
+  graphics_draw_line(ctx, center, second_hand_fill);
+  
+  // Draw the second hand
+  graphics_context_set_stroke_width(ctx, hand_fill_width);
+  #if defined(PBL_COLOR)
+    graphics_context_set_stroke_color(ctx, GColorDarkCandyAppleRed);
+  #endif
+  GPoint hour_hand_fill = gpoint_from_polar(GRect(20, 20, bounds.size.w - 40, bounds.size.w - 40), GOvalScaleModeFitCircle, TRIG_MAX_ANGLE * t->tm_sec / 60);
   graphics_draw_line(ctx, center, hour_hand_fill);
-
+  
+  // Draw inner circle
+  uint16_t outer_clock_radius = 4;
+  uint16_t inner_clock_radius = outer_clock_radius - 2;
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_circle(ctx, center, outer_clock_radius);
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_fill_circle(ctx, center, inner_clock_radius);
+  
   // Draw large ticks
   const int large_ticks_stroke_width = 4;
   graphics_context_set_stroke_width(ctx, large_ticks_stroke_width);
@@ -118,9 +73,7 @@ static void hand_update_radius(int theta, GRect bounds, int hand, GPathInfo *inf
       gpath_draw_outline(ctx, s_small_ticks);
     }
   }
-  
-  // graphics_fill_radial(ctx, GRect((bounds.size.w / 2) - 3, (bounds.size.h / 2) - 3, 5, 5), GOvalScaleModeFitCircle, 5, 0, TRIG_MAX_ANGLE);
-  
+
 }
 
 
@@ -133,15 +86,10 @@ ClockLayer* clock_layer_create(const GRect frame){
   s_large_ticks = gpath_create(&LARGE_TICKS);
   s_small_ticks = gpath_create(&SMALL_TICKS);
 
-  s_hour_hand = gpath_create(&HOUR_HAND);
-  s_minute_hand = gpath_create(&MINUTE_HAND);
-
   // Center the coordinate paths
   GPoint center = grect_center_point(&frame);
   gpath_move_to(s_large_ticks, center);
   gpath_move_to(s_small_ticks, center);
-  gpath_move_to(s_hour_hand, center);
-  gpath_move_to(s_minute_hand, center);
   
 	return clock_layer;
 }

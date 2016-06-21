@@ -18,37 +18,6 @@ static const GPathInfo SMALL_TICKS = {
   }
 };
 
-static GPathInfo HOUR_HAND = {
- 9,
- (GPoint []) {
-   { 1, 7 },
-   { 4, 4 },
-   { 4, -40 },
-   { 1, -45 },
-   { -1, -45 },
-   { -4, -40 },
-   { -4, 4 },
-   { -1, 7 },
-   { 1, 7 }
- }
-};
-
-// Minute hand outline coordinate path
-static GPathInfo MINUTE_HAND = {
- 9,
- (GPoint []) {
-   { 1, 7 },
-   { 4, 4 },
-   { 4, -75 },
-   { 1, -80 },
-   { -1, -80 },
-   { -4, -75 },
-   { -4, 4 },
-   { -1, 7 },
-   { 1, 7 }
- }
-};
-
 static const GPathInfo WIND_TICKS = {
   2,
   (GPoint []) {
