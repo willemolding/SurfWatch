@@ -71,13 +71,15 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(star_label));
 
   //add the wind dial widget
-  wind_dial = dial_widget_layer_create(GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 50, 50));
+  // wind_dial = dial_widget_layer_create(GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 50, 50));
+  wind_dial = dial_widget_layer_create(GRect(((bounds.size.w / 4) * 3) - 30, ((bounds.size.h / 2) - 12), 50, 50));
   dial_widget_layer_set_vector(wind_dial, &surf_data->wind);
   dial_widget_layer_set_unit(wind_dial, surf_data->wind_units);
   layer_add_child(window_layer, wind_dial);
 
   //add the swell dial widget
-  swell_dial = dial_widget_layer_create(GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 50, 50));
+  // swell_dial = dial_widget_layer_create(GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 50, 50));
+  swell_dial = dial_widget_layer_create(GRect((bounds.size.w / 4) - 20, ((bounds.size.h / 2) - 12), 50, 50));
   dial_widget_layer_set_vector(swell_dial, &surf_data->swell);
   dial_widget_layer_set_unit(swell_dial, surf_data->swell_units);
   layer_add_child(window_layer, swell_dial);
