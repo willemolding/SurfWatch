@@ -15,6 +15,7 @@ static void dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContex
 
   graphics_context_set_fill_color(ctx, GColorCobaltBlue);
   graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_stroke_width(ctx, 1);
 
   // draw the dial outline
   graphics_draw_arc(ctx, grect_inset(bounds, GEdgeInsets(1)), 
@@ -42,6 +43,37 @@ static void dial_widget_layer_update(DialWidgetLayer *dial_widget_layer, GContex
     NULL);
 }
 
+static void dial_widget_mini_layer_update(DialWidgetMiniLayer *dial_widget_mini_layer, GContext *ctx) {
+
+  GRect bounds = layer_get_bounds(dial_widget_mini_layer);
+  DialWidgetMiniData *data = (DialWidgetMiniData*)layer_get_data(dial_widget_mini_layer);
+  uint16_t units = data->units;
+  
+  // string formatting
+  char center_text[3];
+  snprintf(center_text, MAX_CENTER_TEXT*sizeof(char), "%d", 
+    data->units);
+
+  graphics_context_set_fill_color(ctx, GColorClear);
+  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_stroke_width(ctx, 1);
+
+  // draw the dial outline
+  graphics_draw_arc(ctx, grect_inset(bounds, GEdgeInsets(1)), 
+    GOvalScaleModeFitCircle, 0, DEG_TO_TRIGANGLE(360));
+
+  // draw the center text
+  GFont font = fonts_get_system_font(FONT_KEY_GOTHIC_14);
+  graphics_context_set_text_color(ctx, GColorBlack);
+  graphics_draw_text(ctx, 
+    center_text,
+    font,
+    grect_inset(bounds, GEdgeInsets(0)),
+    GTextOverflowModeWordWrap,
+    GTextAlignmentCenter,
+    NULL);
+}
+
 DialWidgetLayer* dial_widget_layer_create(GRect frame){
   DialWidgetLayer *dial_widget_layer = layer_create_with_data(frame, sizeof(DialWidgetData));
   layer_set_update_proc(dial_widget_layer, dial_widget_layer_update);
@@ -49,8 +81,19 @@ DialWidgetLayer* dial_widget_layer_create(GRect frame){
   return dial_widget_layer;
 }
 
+DialWidgetMiniLayer* dial_widget_mini_layer_create(GRect frame){
+  DialWidgetMiniLayer *dial_widget_mini_layer = layer_create_with_data(frame, sizeof(DialWidgetMiniData));
+  layer_set_update_proc(dial_widget_mini_layer, dial_widget_mini_layer_update);
+  layer_mark_dirty(dial_widget_mini_layer);
+  return dial_widget_mini_layer;
+}
+
 void dial_widget_layer_destroy(DialWidgetLayer *dial_widget_layer){
   layer_destroy(dial_widget_layer);
+}
+
+void dial_widget_mini_layer_destroy(DialWidgetMiniLayer *dial_widget_mini_layer){
+  layer_destroy(dial_widget_mini_layer);
 }
 
 void dial_widget_layer_set_unit(DialWidgetLayer *dial_widget_layer, char *units){
@@ -62,4 +105,9 @@ void dial_widget_layer_set_unit(DialWidgetLayer *dial_widget_layer, char *units)
 void dial_widget_layer_set_vector(DialWidgetLayer *dial_widget_layer, Vector *vec){
     DialWidgetData *data = (DialWidgetData*)layer_get_data(dial_widget_layer);
     data->vec = vec;
+}
+
+void dial_widget_mini_layer_set_unit(DialWidgetMiniLayer *dial_widget_mini_layer, uint16_t units){
+    DialWidgetMiniData *data = (DialWidgetMiniData*)layer_get_data(dial_widget_mini_layer);
+    data->units = units;
 }

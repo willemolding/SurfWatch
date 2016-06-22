@@ -22,7 +22,8 @@
         "WIND_UNITS": 15,
 
         "MIN_SURF_HEIGHT" : 16,
-        "MAX_SURF_HEIGHT" : 17
+        "MAX_SURF_HEIGHT" : 17,
+        "WAVE_TIME" : 18
     },
     "capabilities": [
         "location",

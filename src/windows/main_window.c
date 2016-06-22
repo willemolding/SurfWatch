@@ -11,6 +11,7 @@ static SurfData *surf_data;
 //speical layers
 static ClockLayer *clock_layer;
 static DialWidgetLayer *wind_dial, *swell_dial;
+static DialWidgetMiniLayer *time_dial;
 static TideLayer *tide_layer;
 
 // Textlayers
@@ -71,18 +72,21 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, text_layer_get_layer(star_label));
 
   //add the wind dial widget
-  // wind_dial = dial_widget_layer_create(GRect(((bounds.size.w / 4) * 3) - 25, ((bounds.size.h / 2) - 12), 50, 50));
   wind_dial = dial_widget_layer_create(GRect(((bounds.size.w / 4) * 3) - 30, ((bounds.size.h / 2) - 12), 50, 50));
   dial_widget_layer_set_vector(wind_dial, &surf_data->wind);
   dial_widget_layer_set_unit(wind_dial, surf_data->wind_units);
   layer_add_child(window_layer, wind_dial);
 
   //add the swell dial widget
-  // swell_dial = dial_widget_layer_create(GRect((bounds.size.w / 4) - 15, ((bounds.size.h / 2) - 12), 50, 50));
   swell_dial = dial_widget_layer_create(GRect((bounds.size.w / 4) - 20, ((bounds.size.h / 2) - 12), 50, 50));
   dial_widget_layer_set_vector(swell_dial, &surf_data->swell);
   dial_widget_layer_set_unit(swell_dial, surf_data->swell_units);
   layer_add_child(window_layer, swell_dial);
+  
+  //add the time dial widget
+  time_dial = dial_widget_mini_layer_create(GRect((bounds.size.w / 2) - 10, ((bounds.size.h / 2) + 15), 20, 20));
+  dial_widget_mini_layer_set_unit(time_dial, surf_data->wave_time);
+  layer_add_child(window_layer, time_dial);
 
   //add the tide layer
   tide_layer = tide_layer_create(GRect(0, 3*bounds.size.h/4, bounds.size.w, bounds.size.h/4));

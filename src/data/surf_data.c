@@ -72,6 +72,11 @@ void receive_surf_data(DictionaryIterator *iterator, SurfData *surf_data) {
       case MAX_SURF_HEIGHT:
         surf_data->max_surf_height = tuple->value->uint16;
         break;
+      
+      
+      case WAVE_TIME:
+        surf_data->wave_time = tuple->value->uint16;
+        break;
 
     }
 

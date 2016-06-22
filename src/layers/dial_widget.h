@@ -12,16 +12,24 @@
 // same way as graphics_draw_arc.
 
 typedef Layer DialWidgetLayer;
+typedef Layer DialWidgetMiniLayer;
 
 typedef struct {
 	char *units;
 	Vector *vec;
 } DialWidgetData;
 
+typedef struct {
+	uint16_t units;
+} DialWidgetMiniData;
+
 DialWidgetLayer* dial_widget_layer_create(GRect frame);
+DialWidgetMiniLayer* dial_widget_mini_layer_create(GRect frame);
 
 void dial_widget_layer_destroy(DialWidgetLayer *dial_widget_layer);
+void dial_widget_mini_layer_destroy(DialWidgetLayer *dial_widget_layer);
 
 void dial_widget_layer_set_unit(DialWidgetLayer *dial_widget_layer, char *units);
+void dial_widget_mini_layer_set_unit(DialWidgetMiniLayer *dial_widget_mini_layer, uint16_t units);
 
 void dial_widget_layer_set_vector(DialWidgetLayer *dial_widget_layer, Vector *vec);

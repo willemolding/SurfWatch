@@ -34,11 +34,13 @@ typedef struct TidePoint{
     Vector swell;
     char swell_units[MAX_UNIT_LEN];
 
- 	Vector wind;
+    Vector wind;
     char wind_units[MAX_UNIT_LEN];
 
     uint16_t min_surf_height;
     uint16_t max_surf_height;
+    
+    uint16_t wave_time;
  } SurfData;
 
 
@@ -65,7 +67,9 @@ enum {
     WIND_UNITS,
 
     MIN_SURF_HEIGHT,
-    MAX_SURF_HEIGHT 
+    MAX_SURF_HEIGHT, 
+    
+    WAVE_TIME
 };
 
 //Accepts an app message containing a JSON defined surf_data struct

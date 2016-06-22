@@ -39,6 +39,9 @@ function add_forecast_data_to_message(response, message){
 
 	message['MIN_SURF_HEIGHT'] = response.swell.minBreakingHeight;
 	message['MAX_SURF_HEIGHT'] = response.swell.maxBreakingHeight;
+  
+  
+	message['WAVE_TIME'] = response.swell.components.combined.period;
 
 	return message;
 }
