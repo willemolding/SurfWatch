@@ -38,6 +38,7 @@ static void init(void) {
   surf_data.faded_rating = 2;
   surf_data.min_surf_height = 1;
   surf_data.max_surf_height = 2;
+  surf_data.surf_period = 14;
 
   TidePoint tide_points[2] = { {.time = 1466123182, .height = 15, .state = 0},
                             {.time = 1466143710, .height = 102, .state = 1} };

@@ -41,8 +41,8 @@ static void update_display_data() {
     }
 
     // Do the surf height string
-    snprintf(wave_height_string, MAX_WAVE_STRING*sizeof(char), "%u-%u %s", 
-      surf_data->min_surf_height, surf_data->max_surf_height, surf_data->swell_units);
+    snprintf(wave_height_string, MAX_WAVE_STRING*sizeof(char), "%u-%u %s(%u s)", 
+      surf_data->min_surf_height, surf_data->max_surf_height, surf_data->swell_units, surf_data->surf_period);
   }
 
 
@@ -56,7 +56,7 @@ static void window_load(Window *window) {
   s_symbol_font_18 = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_SYMBOL_18));
   
   // Create the surf text layer
-  surf_label = text_layer_create(GRect((bounds.size.w / 4), (bounds.size.h / 4) - 15, (bounds.size.w / 2), 30));
+  surf_label = text_layer_create(GRect(0, (bounds.size.h / 4) - 15, bounds.size.w, 30));
   text_layer_set_text(surf_label, wave_height_string);
   text_layer_set_text_color(surf_label, GColorDarkCandyAppleRed);
   text_layer_set_font(surf_label, s_surf_font_24);
